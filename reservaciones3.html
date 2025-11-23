@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Mouk Club - Reservaciones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #d4af37;
+            --secondary-color: #1a1a1a;
+            --accent-color: #2a2a2a;
+            --text-color: #f5f5f5;
+            --danger-color: #5a1a1a;
+            --warning-color: #5a3a1a;
+            --success-color: #1a5a2a;
+        }
+
+        body {
+            background-color: #0a0a0a;
+            color: var(--text-color);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+
+        /* Header Styles - Mobile First */
+        header {
+            background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+            padding: 12px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo-icon {
+            font-size: 1.4rem;
+            color: var(--primary-color);
+        }
+
+        .logo h1 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .logo span {
+            color: var(--text-color);
+            font-size: 1rem;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-links {
+            display: none;
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 100%;
+            background: var(--secondary-color);
+            flex-direction: column;
+            padding: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            z-index: 999;
+        }
+
+        .nav-links.active {
+            display: flex;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+            transition: color 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:last-child {
+            border-bottom: none;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-color);
+        }
+
+        .menu-toggle {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 22px;
+            height: 18px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+        }
+
+        .menu-toggle span {
+            display: block;
+            height: 2px;
+            width: 100%;
+            background-color: var(--text-color);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(5px, -5px);
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            text-decoration: none;
+            min-height: 40px;
+        }
+
+        .btn:hover {
+            background-color: #c19b2a;
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background-color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #3a3a3a;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            min-height: 32px;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://lh3.googleusercontent.com/gps-cs-s/AG0ilSx9aYWXeSnvpyIik_A0QQZqTfr8a5BsNuaieK_jmJCYGPKq8nS1fydsGi4sODAFos0l3nArUsnQUMD4LjT4gHFUyjJ3GnFNrwsJ0ucFoHQg-AlCnCLJLRDQgiSCOKTyoP1abHpk=s680-w680-h510-rw');
+            background-size: cover;
+            background-position: center;
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 0.9rem;
+            max-width: 700px;
+            margin: 0 auto 20px;
+            color: var(--text-color);
+        }
+
+        /* Reservation Section */
+        .reservation-section {
+            padding: 30px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+        }
+
+        .reservation-process {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Calendar Styles */
+        .calendar-container {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .calendar-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 8px;
+        }
+
+        .calendar-nav-btn {
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: background-color 0.3s;
+            font-size: 0.8rem;
+            flex: 1;
+            justify-content: center;
+            min-height: 36px;
+        }
+
+        .calendar-nav-btn:hover {
+            background-color: #3a3a3a;
+        }
+
+        .current-month {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+            flex: 2;
+        }
+
+        .calendar-header {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            margin-bottom: 8px;
+        }
+
+        .calendar-header-day {
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary-color);
+            padding: 6px 0;
+            font-size: 0.75rem;
+        }
+
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+        }
+
+        .calendar-day {
+            background-color: var(--accent-color);
+            border-radius: 5px;
+            padding: 6px 3px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 0.8rem;
+        }
+
+        .calendar-day:hover {
+            background-color: #3a3a3a;
+        }
+
+        .calendar-day.available {
+            border: 1px solid var(--accent-color);
+        }
+
+        .calendar-day.reserved {
+            background-color: var(--danger-color);
+            cursor: not-allowed;
+        }
+
+        .calendar-day.reserved:hover {
+            background-color: #6a2a2a;
+        }
+
+        .calendar-day.pending {
+            background-color: var(--warning-color);
+        }
+
+        .calendar-day.selected {
+            background-color: var(--success-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .calendar-day.today {
+            border: 2px solid var(--primary-color);
+        }
+
+        .calendar-day.other-month {
+            background-color: var(--secondary-color);
+            color: #555;
+            cursor: not-allowed;
+        }
+
+        .day-number {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .day-status {
+            font-size: 0.6rem;
+            color: #aaa;
+        }
+
+        /* Furniture Styles */
+        .furniture-container {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .furniture-container.active {
+            display: block;
+        }
+
+        .furniture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+        }
+
+        .furniture-card {
+            background-color: var(--accent-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .furniture-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .furniture-card.selected {
+            border: 2px solid var(--primary-color);
+        }
+
+        .furniture-card.reserved {
+            background-color: var(--danger-color);
+            cursor: not-allowed;
+        }
+
+        .furniture-card.pending {
+            background-color: var(--warning-color);
+        }
+
+        .furniture-card.reserved:hover,
+        .furniture-card.pending:hover {
+            transform: none;
+        }
+
+        .furniture-card.reserved::after {
+            content: "RESERVADA";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            background-color: rgba(255, 0, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+
+        .furniture-card.pending::after {
+            content: "PENDIENTE";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            background-color: rgba(255, 165, 0, 0.8);
+            color: white;
+            padding: 4px 8px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+
+        .furniture-image {
+            height: 90px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .furniture-details {
+            padding: 10px;
+        }
+
+        .furniture-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--primary-color);
+        }
+
+        .furniture-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
+        .furniture-price {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 0.8rem;
+        }
+
+        /* Reservation Summary */
+        .reservation-summary {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .reservation-summary.active {
+            display: block;
+        }
+
+        .summary-title {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        .summary-details {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--accent-color);
+            font-size: 0.85rem;
+        }
+
+        .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-top: 2px solid var(--primary-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--primary-color);
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            padding: 30px 0;
+        }
+
+        .admin-header {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .admin-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .reservations-list {
+            background-color: var(--secondary-color);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .reservation-item {
+            background-color: var(--accent-color);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .reservation-info h4 {
+            color: var(--primary-color);
+            margin-bottom: 4px;
+            font-size: 0.95rem;
+        }
+
+        .reservation-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background-color: var(--warning-color);
+            color: #ffaa00;
+        }
+
+        .status-confirmed {
+            background-color: var(--success-color);
+            color: #00ff88;
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--secondary-color);
+            padding: 30px 0 15px;
+            margin-top: 40px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+            margin-bottom: 20px;
+        }
+
+        .footer-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            font-size: 1.1rem;
+        }
+
+        .footer-section p, .footer-section a {
+            color: #aaa;
+            margin-bottom: 6px;
+            display: block;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .footer-section a:hover {
+            color: var(--primary-color);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .social-links a {
+            font-size: 1.1rem;
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--accent-color);
+            color: #666;
+            font-size: 0.8rem;
+        }
+
+        /* Password input styling */
+        .password-input {
+            -webkit-text-security: disc;
+            text-security: disc;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+        }
+
+        .modal-content {
+            background-color: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #444;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            background-color: var(--accent-color);
+            color: var(--text-color);
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .form-actions .btn {
+            flex: 1;
+        }
+
+        /* Print Styles */
+        @media print {
+            header, .hero, footer, .admin-actions, .calendar-container {
+                display: none !important;
+            }
+            
+            .admin-panel {
+                display: block !important;
+                padding: 0;
+            }
+            
+            .reservations-list {
+                box-shadow: none;
+                background: white;
+                color: black;
+            }
+            
+            .reservation-item {
+                background: #f5f5f5;
+                color: black;
+                border: 1px solid #ddd;
+            }
+            
+            body {
+                background: white;
+                color: black;
+                font-size: 11px;
+            }
+        }
+
+        /* Tablet Styles */
+        @media (min-width: 768px) {
+            body {
+                font-size: 15px;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+
+            .hero {
+                padding: 80px 0;
+            }
+
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+                margin-bottom: 30px;
+            }
+
+            .reservation-process {
+                flex-direction: row;
+                gap: 30px;
+            }
+
+            .calendar-container,
+            .furniture-container {
+                flex: 1;
+            }
+
+            .calendar-day {
+                min-height: 60px;
+                padding: 8px 4px;
+            }
+
+            .furniture-grid {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 15px;
+            }
+
+            .furniture-image {
+                height: 110px;
+            }
+
+            .summary-details {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .admin-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .reservation-item {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .footer-content {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 30px;
+            }
+
+            .menu-toggle {
+                display: none;
+            }
+
+            .nav-links {
+                display: flex;
+                position: static;
+                flex-direction: row;
+                background: transparent;
+                padding: 0;
+                box-shadow: none;
+                width: auto;
+            }
+
+            .nav-links a {
+                padding: 0;
+                border-bottom: none;
+                margin-left: 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 1024px) {
+            .calendar-nav-btn {
+                flex: initial;
+                padding: 8px 15px;
+            }
+
+            .current-month {
+                flex: initial;
+            }
+
+            .admin-actions {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 12px;
+            }
+
+            .hero h2 {
+                font-size: 2.6rem;
+            }
+
+            .furniture-grid {
+                grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            }
+
+            .furniture-image {
+                height: 120px;
+            }
+        }
+
+        /* Touch device optimizations */
+        @media (hover: none) and (pointer: coarse) {
+            .btn:hover, 
+            .calendar-day:hover, 
+            .furniture-card:hover,
+            .calendar-nav-btn:hover {
+                transform: none;
+            }
+        }
+
+        /* Selected date indicator */
+        .selected-date-indicator {
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .selected-date-indicator.active {
+            display: block;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-couch logo-icon"></i>
+                    <h1>Le Mouk <span>Club</span></h1>
+                </div>
+                
+                <button class="menu-toggle" id="menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <div class="nav-links" id="nav-links">
+                    <a href="#reservations">Reservaciones</a>
+                    <a href="#about">Nosotros</a>
+                    <a href="#contact">Contacto</a>
+                    <button class="btn btn-small" id="admin-login-btn">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h2>Reserva tu experiencia exclusiva</h2>
+            <p>Disfruta de una noche inolvidable en el club más exclusivo de la ciudad. Reserva tu mesa preferida con anticipación.</p>
+            <button class="btn" id="reserve-now-btn">
+                <i class="fas fa-calendar-plus"></i> Reservar Ahora
+            </button>
+        </div>
+    </section>
+
+    <!-- Reservation Section -->
+    <section class="reservation-section" id="reservations">
+        <div class="container">
+            <h2 class="section-title">Reserva tu Mesa</h2>
+            
+            <!-- Selected Date Indicator -->
+            <div class="selected-date-indicator" id="selected-date-indicator">
+                <i class="fas fa-calendar-day"></i>
+                Fecha seleccionada: <span id="selected-date-text"></span>
+            </div>
+            
+            <div class="reservation-process">
+                <!-- Calendar -->
+                <div class="calendar-container">
+                    <h3>Selecciona una Fecha</h3>
+                    <div id="calendar-container"></div>
+                </div>
+                
+                <!-- Furniture Selection -->
+                <div class="furniture-container" id="furniture-container">
+                    <h3>Selecciona tu Mesa</h3>
+                    <div class="furniture-grid" id="furniture-grid">
+                        <!-- Furniture cards will be loaded here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reservation Summary -->
+            <div class="reservation-summary" id="reservation-summary">
+                <h3 class="summary-title">Resumen de tu Reservación</h3>
+                <div class="summary-details">
+                    <div class="summary-item">
+                        <span>Fecha:</span>
+                        <span id="summary-date">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Mesa:</span>
+                        <span id="summary-furniture">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Capacidad:</span>
+                        <span id="summary-capacity">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Precio:</span>
+                        <span id="summary-price">-</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total:</span>
+                        <span id="summary-total">-</span>
+                    </div>
+                </div>
+                <button class="btn" id="confirm-reservation-btn" style="width: 100%; margin-top: 15px;">
+                    <i class="fas fa-check-circle"></i> Confirmar Reservación
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section class="admin-panel" id="admin-panel">
+        <div class="container">
+            <div class="admin-header">
+                <h2 class="section-title">Panel de Administración</h2>
+                <button class="btn" id="back-to-reservations-btn">
+                    <i class="fas fa-arrow-left"></i> Volver a Reservaciones
+                </button>
+            </div>
+            
+            <div class="admin-actions">
+                <button class="btn" id="export-reservations-btn">
+                    <i class="fas fa-file-export"></i> Exportar Reservaciones
+                </button>
+                <button class="btn" id="print-reservations-btn">
+                    <i class="fas fa-print"></i> Imprimir Reservaciones
+                </button>
+                <button class="btn" id="clear-reservations-btn">
+                    <i class="fas fa-trash"></i> Limpiar Reservaciones
+                </button>
+                <button class="btn btn-secondary" id="clean-old-reservations-btn">
+                    <i class="fas fa-broom"></i> Limpiar Reservaciones Pasadas
+                </button>
+            </div>
+            
+            <div class="calendar-container">
+                <h3>Calendario de Reservaciones</h3>
+                <div id="admin-calendar-container"></div>
+            </div>
+            
+            <div class="reservations-list">
+                <h3>Reservaciones Recientes</h3>
+                <div id="reservations-list-container">
+                    <!-- Reservations will be loaded here by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Le Mouk Club</h3>
+                    <p>El lugar perfecto para disfrutar de noches inolvidables con amigos, buena música y el mejor ambiente.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Horario</h3>
+                    <p>Martes - Jueves: 8:00 PM - 2:00 AM</p>
+                    <p>Viernes - Domingo: 8:00 PM - 3:00 AM</p>
+                    <p>Lunes Cerrado</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Av. 27 de Febrero, Santiago</p>
+                    <p><i class="fas fa-phone"></i> 1 809 460 4066</p>
+                    <p><i class="fas fa-envelope"></i> lemoukclub@Hotmail.com</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Le Mouk Club. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Datos de ejemplo para el sistema
+        const furnitureData = [
+            {
+                id: 1,
+                name: "Mesa VIP 1",
+                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                capacity: "4 personas",
+                price: "$150",
+                status: "available"
+            },
+            {
+                id: 2,
+                name: "Mesa VIP 2",
+                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                capacity: "6 personas",
+                price: "$200",
+                status: "available"
+            },
+            {
+                id: 3,
+                name: "Mesa Premium",
+                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                capacity: "8 personas",
+                price: "$300",
+                status: "available"
+            },
+            {
+                id: 4,
+                name: "Sofá Lounge",
+                image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                capacity: "5 personas",
+                price: "$250",
+                status: "available"
+            },
+			{
+                id: 5,
+                name: "Mueble 5",
+                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                capacity: "4 personas",
+                price: "$1150",
+                status: "available"
+            },
+			{
+                id: 6,
+                name: "Meueble 6",
+                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                capacity: "4 personas",
+                price: "$650",
+                status: "available"
+            },
+			{
+                id: 7,
+                name: "Mueble 7",
+                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                capacity: "4 personas",
+                price: "$850",
+                status: "available"
+            },
+			{
+                id: 8,
+                name: "Mueble 8",
+                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                capacity: "4 personas",
+                price: "$750",
+                status: "available"
+            },
+			{
+                id: 9,
+                name: "Mueble 9",
+                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+                capacity: "4 personas",
+                price: "$1750",
+                status: "available"
+            }			
+			
+        ];
+
+        // Variables globales
+        let currentCalendarMonth = new Date().getMonth();
+        let currentCalendarYear = new Date().getFullYear();
+        let selectedDate = null;
+        let selectedFurniture = null;
+        let reservations = JSON.parse(localStorage.getItem('mouk_reservations')) || [];
+        let currentReservationForWhatsApp = null;
+        let pendingReservationData = null;
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCalendar();
+            setupEventListeners();
+            
+            // Cargar reservaciones existentes
+            updateReservationsList();
+            
+            // Limpiar reservaciones pasadas al cargar la página
+            cleanOldReservations();
+        });
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Menú móvil
+            document.getElementById('menu-toggle').addEventListener('click', toggleMobileMenu);
+            
+            // Cerrar menú al hacer clic en un enlace
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.addEventListener('click', closeMobileMenu);
+            });
+            
+            // Botones principales
+            document.getElementById('admin-login-btn').addEventListener('click', showAdminLogin);
+            document.getElementById('back-to-reservations-btn').addEventListener('click', showReservationSection);
+            document.getElementById('confirm-reservation-btn').addEventListener('click', showReservationForm);
+            document.getElementById('export-reservations-btn').addEventListener('click', exportReservations);
+            document.getElementById('print-reservations-btn').addEventListener('click', printReservations);
+            document.getElementById('clear-reservations-btn').addEventListener('click', clearReservations);
+            document.getElementById('clean-old-reservations-btn').addEventListener('click', cleanOldReservations);
+            document.getElementById('reserve-now-btn').addEventListener('click', function() {
+                document.getElementById('reservations').scrollIntoView({ behavior: 'smooth' });
+            });
+            
+            // Cerrar menú al hacer clic fuera de él
+            document.addEventListener('click', function(event) {
+                const menuToggle = document.getElementById('menu-toggle');
+                const navLinks = document.getElementById('nav-links');
+                
+                if (!menuToggle.contains(event.target) && !navLinks.contains(event.target)) {
+                    closeMobileMenu();
+                }
+            });
+        }
+
+        // Menú móvil
+        function toggleMobileMenu() {
+            const menuToggle = document.getElementById('menu-toggle');
+            const navLinks = document.getElementById('nav-links');
+            
+            menuToggle.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        }
+
+        function closeMobileMenu() {
+            const menuToggle = document.getElementById('menu-toggle');
+            const navLinks = document.getElementById('nav-links');
+            
+            menuToggle.classList.remove('active');
+            navLinks.classList.remove('active');
+        }
+
+        // Inicializar calendario
+        function initializeCalendar() {
+            generateCalendar();
+        }
+
+        // Generar calendario completo
+        function generateCalendar() {
+            const calendarContainer = document.getElementById('calendar-container');
+            calendarContainer.innerHTML = '';
+
+            // Crear navegación del calendario
+            const navigationDiv = document.createElement('div');
+            navigationDiv.className = 'calendar-navigation';
+            navigationDiv.innerHTML = `
+                <button class="calendar-nav-btn" id="prev-month-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="current-month" id="current-month-display"></div>
+                <button class="calendar-nav-btn" id="next-month-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            calendarContainer.appendChild(navigationDiv);
+
+            // Crear encabezados de días de la semana
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'calendar-header';
+            const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            daysOfWeek.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-header-day';
+                dayHeader.textContent = day;
+                headerDiv.appendChild(dayHeader);
+            });
+            calendarContainer.appendChild(headerDiv);
+
+            // Crear grid de días
+            const calendarGrid = document.createElement('div');
+            calendarGrid.className = 'calendar';
+            calendarGrid.id = 'calendar-grid';
+            calendarContainer.appendChild(calendarGrid);
+
+            // Generar el mes actual
+            generateMonthCalendar();
+
+            // Agregar event listeners para navegación
+            document.getElementById('prev-month-btn').addEventListener('click', previousMonth);
+            document.getElementById('next-month-btn').addEventListener('click', nextMonth);
+        }
+
+        // Generar calendario para el mes actual
+        function generateMonthCalendar() {
+            const calendarGrid = document.getElementById('calendar-grid');
+            calendarGrid.innerHTML = '';
+
+            // Actualizar display del mes actual
+            document.getElementById('current-month-display').textContent = 
+                getMonthName(currentCalendarMonth) + ' ' + currentCalendarYear;
+
+            const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1);
+            const lastDay = new Date(currentCalendarYear, currentCalendarMonth + 1, 0);
+            const today = new Date();
+
+            // Días del mes anterior
+            const startingDay = firstDay.getDay();
+            const prevMonthLastDay = new Date(currentCalendarYear, currentCalendarMonth, 0).getDate();
+            
+            for (let i = startingDay - 1; i >= 0; i--) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.innerHTML = `
+                    <div class="day-number">${prevMonthLastDay - i}</div>
+                `;
+                calendarGrid.appendChild(dayElement);
+            }
+
+            // Días del mes actual
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const date = new Date(currentCalendarYear, currentCalendarMonth, day);
+                const dateString = formatDateToLocal(date);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day available';
+                dayElement.setAttribute('data-date', dateString);
+                
+                // Solo considerar reservaciones CONFIRMADAS para mostrar como reservadas
+                const confirmedReservations = reservations.filter(r => r.date === dateString && r.status === 'confirmed');
+                const pendingReservations = reservations.filter(r => r.date === dateString && r.status === 'pending');
+                
+                let status = 'available';
+                let statusText = 'Disponible';
+                
+                if (confirmedReservations.length >= furnitureData.length) {
+                    status = 'reserved';
+                    statusText = 'Reservado';
+                } else if (pendingReservations.length > 0) {
+                    status = 'pending';
+                    statusText = 'Pendiente';
+                }
+                
+                dayElement.className = `calendar-day ${status}`;
+                
+                // Marcar si es hoy
+                if (isToday(date)) {
+                    dayElement.classList.add('today');
+                }
+                
+                // Marcar si está seleccionado
+                if (dateString === selectedDate) {
+                    dayElement.classList.add('selected');
+                }
+                
+                dayElement.innerHTML = `
+                    <div class="day-number">${day}</div>
+                    <div class="day-status">${statusText}</div>
+                `;
+                
+                // Agregar event listener para selección de fecha
+                dayElement.addEventListener('click', function() {
+                    if (!this.classList.contains('other-month') && !this.classList.contains('reserved')) {
+                        selectDate(dateString);
+                    }
+                });
+                
+                calendarGrid.appendChild(dayElement);
+            }
+
+            // Días del siguiente mes
+            const totalCells = 42;
+            const remainingCells = totalCells - (startingDay + lastDay.getDate());
+            
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.innerHTML = `
+                    <div class="day-number">${day}</div>
+                `;
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        // Función para formatear fecha a formato local
+        function formatDateToLocal(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Función para verificar si una fecha es hoy
+        function isToday(date) {
+            const today = new Date();
+            return date.getDate() === today.getDate() &&
+                   date.getMonth() === today.getMonth() &&
+                   date.getFullYear() === today.getFullYear();
+        }
+
+        // Obtener nombre del mes
+        function getMonthName(month) {
+            const months = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+            return months[month];
+        }
+
+        // Navegación entre meses
+        function previousMonth() {
+            currentCalendarMonth--;
+            if (currentCalendarMonth < 0) {
+                currentCalendarMonth = 11;
+                currentCalendarYear--;
+            }
+            generateMonthCalendar();
+        }
+
+        function nextMonth() {
+            currentCalendarMonth++;
+            if (currentCalendarMonth > 11) {
+                currentCalendarMonth = 0;
+                currentCalendarYear++;
+            }
+            generateMonthCalendar();
+        }
+
+        // Cargar muebles/mesas
+        function loadFurniture() {
+            const furnitureGrid = document.getElementById('furniture-grid');
+            furnitureGrid.innerHTML = '';
+            
+            furnitureData.forEach(furniture => {
+                const furnitureCard = document.createElement('div');
+                furnitureCard.className = 'furniture-card';
+                
+                // Solo considerar reservaciones CONFIRMADAS como reservadas
+                const isReserved = selectedDate && isFurnitureReserved(selectedDate, furniture.id, 'confirmed');
+                const isPending = selectedDate && isFurnitureReserved(selectedDate, furniture.id, 'pending');
+                
+                if (isReserved) {
+                    furnitureCard.classList.add('reserved');
+                } else if (isPending) {
+                    furnitureCard.classList.add('pending');
+                } else if (selectedFurniture === furniture.id) {
+                    furnitureCard.classList.add('selected');
+                }
+                
+                furnitureCard.innerHTML = `
+                    <img src="${furniture.image}" alt="${furniture.name}" class="furniture-image">
+                    <div class="furniture-details">
+                        <h4 class="furniture-name">${furniture.name}</h4>
+                        <div class="furniture-info">
+                            <span><i class="fas fa-users"></i> ${furniture.capacity}</span>
+                            <span class="furniture-price">${furniture.price}</span>
+                        </div>
+                        ${isReserved ? '<div style="color: #ff6b6b; font-size: 0.7rem; margin-top: 3px;"><i class="fas fa-exclamation-triangle"></i> No disponible</div>' : ''}
+                        ${isPending ? '<div style="color: #ffaa00; font-size: 0.7rem; margin-top: 3px;"><i class="fas fa-clock"></i> Pendiente</div>' : ''}
+                    </div>
+                `;
+                
+                // Solo permitir clic si no está reservada (las pendientes se pueden seleccionar)
+                if (!isReserved) {
+                    furnitureCard.addEventListener('click', function() {
+                        selectFurniture(furniture.id);
+                    });
+                } else {
+                    furnitureCard.style.cursor = 'not-allowed';
+                }
+                
+                furnitureGrid.appendChild(furnitureCard);
+            });
+        }
+
+        // Función para verificar si una mesa específica está reservada para una fecha
+        function isFurnitureReserved(date, furnitureId, statusFilter = 'confirmed') {
+            return reservations.some(r => 
+                r.date === date && 
+                r.furnitureId === furnitureId &&
+                r.status === statusFilter
+            );
+        }
+
+        // Seleccionar fecha - NUEVO COMPORTAMIENTO
+        function selectDate(date) {
+            selectedDate = date;
+            selectedFurniture = null; // Resetear selección de mesa al cambiar fecha
+            
+            // Actualizar interfaz
+            generateMonthCalendar();
+            
+            // Mostrar el indicador de fecha seleccionada
+            const dateIndicator = document.getElementById('selected-date-indicator');
+            const dateText = document.getElementById('selected-date-text');
+            const formattedDate = formatDateForDisplay(selectedDate);
+            
+            dateText.textContent = formattedDate;
+            dateIndicator.classList.add('active');
+            
+            // Mostrar el contenedor de mesas
+            const furnitureContainer = document.getElementById('furniture-container');
+            furnitureContainer.classList.add('active');
+            
+            // Cargar y mostrar las mesas
+            loadFurniture();
+            
+            // Ocultar el resumen si estaba visible
+            const summaryElement = document.getElementById('reservation-summary');
+            summaryElement.classList.remove('active');
+            
+            // Scroll suave hacia las mesas en móvil
+            if (window.innerWidth < 768) {
+                setTimeout(() => {
+                    furnitureContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+        }
+
+        // Seleccionar mueble/mesa
+        function selectFurniture(furnitureId) {
+            // Solo verificar si está reservada (confirmada), las pendientes se pueden seleccionar
+            if (selectedDate && isFurnitureReserved(selectedDate, furnitureId, 'confirmed')) {
+                alert('Esta Mesa ya está Reservada para la Fecha Seleccionada. Por Favor, Elige Otra Mesa.');
+                return;
+            }
+            
+            selectedFurniture = furnitureId;
+            loadFurniture();
+            updateReservationSummary();
+            
+            // Mostrar el resumen
+            const summaryElement = document.getElementById('reservation-summary');
+            summaryElement.classList.add('active');
+            
+            // Scroll suave hacia el resumen en móvil
+            if (window.innerWidth < 768) {
+                setTimeout(() => {
+                    summaryElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+            }
+        }
+
+        // Actualizar resumen de reserva
+        function updateReservationSummary() {
+            const summaryElement = document.getElementById('reservation-summary');
+            const confirmBtn = document.getElementById('confirm-reservation-btn');
+            
+            if (selectedDate && selectedFurniture) {
+                const furniture = furnitureData.find(f => f.id === selectedFurniture);
+                const formattedDate = formatDateForDisplay(selectedDate);
+                
+                document.getElementById('summary-date').textContent = formattedDate;
+                document.getElementById('summary-furniture').textContent = furniture.name;
+                document.getElementById('summary-capacity').textContent = furniture.capacity;
+                document.getElementById('summary-price').textContent = furniture.price;
+                document.getElementById('summary-total').textContent = furniture.price;
+                
+                // Solo deshabilitar si está reservada (confirmada)
+                const isReserved = isFurnitureReserved(selectedDate, selectedFurniture, 'confirmed');
+                confirmBtn.disabled = isReserved;
+                
+                if (isReserved) {
+                    confirmBtn.title = "Esta Mesa ya está Reservada para la Fecha Seleccionada";
+                } else {
+                    confirmBtn.title = "";
+                }
+            }
+        }
+
+        // Función para formatear fecha en resumen
+        function formatDateForDisplay(dateString) {
+            const date = new Date(dateString + 'T00:00:00');
+            return date.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        // [El resto del código JavaScript se mantiene igual...]
+        // (showReservationForm, createPendingReservation, sendConfirmationMessage, 
+        // funciones del panel administrativo, etc.)
+
+        // Mostrar formulario de reservación
+        function showReservationForm() {
+            if (!selectedDate || !selectedFurniture) {
+                alert('Por Favor, Selecciona una Fecha y una Mesa para Continuar.');
+                return;
+            }
+            
+            // Solo verificar si está reservada (confirmada)
+            if (isFurnitureReserved(selectedDate, selectedFurniture, 'confirmed')) {
+                alert('Lo sentimos, esta mesa ya está reservada para la fecha seleccionada. Por favor, selecciona otra mesa o fecha.');
+                return;
+            }
+            
+            const furniture = furnitureData.find(f => f.id === selectedFurniture);
+            const formattedDate = formatDateForDisplay(selectedDate);
+            
+            // Crear modal de formulario
+            const formModal = document.createElement('div');
+            formModal.className = 'modal-overlay';
+            formModal.innerHTML = `
+                <div class="modal-content">
+                    <h3 class="modal-title">
+                        <i class="fas fa-calendar-check"></i> Confirmar Reservación
+                    </h3>
+                    
+                    <div style="background-color: var(--accent-color); padding: 12px; border-radius: 6px; margin-bottom: 15px;">
+                        <p><strong>Fecha:</strong> ${formattedDate}</p>
+                        <p><strong>Mesa:</strong> ${furniture.name}</p>
+                        <p><strong>Precio:</strong> ${furniture.price}</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="client-name">Nombre Completo</label>
+                        <input type="text" id="client-name" class="form-control" placeholder="Ingresa tu nombre completo">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="client-phone">Teléfono</label>
+                        <input type="tel" id="client-phone" class="form-control" placeholder="Ingresa tu número de teléfono">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="client-email">Email (opcional)</label>
+                        <input type="email" id="client-email" class="form-control" placeholder="Ingresa tu email">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button class="btn" id="submit-reservation-btn">
+                            <i class="fas fa-check"></i> Confirmar
+                        </button>
+                        <button class="btn btn-secondary" id="cancel-reservation-btn">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(formModal);
+            
+            // Event listeners para el modal
+            document.getElementById('submit-reservation-btn').addEventListener('click', function() {
+                const clientName = document.getElementById('client-name').value.trim();
+                const clientPhone = document.getElementById('client-phone').value.trim();
+                const clientEmail = document.getElementById('client-email').value.trim();
+                
+                if (!clientName || !clientPhone) {
+                    alert('Por Favor, Completa al Menos tu Nombre y Teléfono.');
+                    return;
+                }
+                
+                // Verificar una última vez que la mesa no esté reservada (confirmada)
+                if (isFurnitureReserved(selectedDate, selectedFurniture, 'confirmed')) {
+                    alert('Lo sentimos, esta mesa ya fue reservada mientras completabas el formulario. Por favor, selecciona otra mesa.');
+                    document.body.removeChild(formModal);
+                    return;
+                }
+                
+                pendingReservationData = {
+                    clientName,
+                    clientPhone,
+                    clientEmail
+                };
+                
+                document.body.removeChild(formModal);
+                createPendingReservation();
+            });
+            
+            document.getElementById('cancel-reservation-btn').addEventListener('click', function() {
+                document.body.removeChild(formModal);
+            });
+            
+            // Enter para enviar
+            document.getElementById('client-name').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('submit-reservation-btn').click();
+                }
+            });
+            
+            // Focus en el primer input
+            document.getElementById('client-name').focus();
+        }
+
+        // En la función createPendingReservation, asegurar que la fecha se guarde correctamente
+        function createPendingReservation() {
+            const furniture = furnitureData.find(f => f.id === selectedFurniture);
+            
+            const newReservation = {
+                id: Date.now(),
+                date: selectedDate,
+                furnitureId: selectedFurniture,
+                furnitureName: furniture.name,
+                price: furniture.price,
+                clientName: pendingReservationData.clientName,
+                clientPhone: pendingReservationData.clientPhone,
+                clientEmail: pendingReservationData.clientEmail,
+                timestamp: new Date().toISOString(),
+                status: 'pending', // Estado pendiente por defecto
+                source: 'client'
+            };
+
+            reservations.push(newReservation);
+            localStorage.setItem('mouk_reservations', JSON.stringify(reservations));
+
+            // Actualizar interfaz
+            generateMonthCalendar();
+            loadFurniture();
+            
+            // Actualizar panel administrativo si está visible
+            if (document.getElementById('admin-panel').style.display === 'block') {
+                updateReservationsList();
+                initializeAdminCalendar();
+            }
+
+            // Enviar mensaje de confirmación al cliente
+            sendConfirmationMessage(newReservation);
+            
+            // Resetear selección
+            selectedDate = null;
+            selectedFurniture = null;
+            
+            // Ocultar secciones
+            document.getElementById('furniture-container').classList.remove('active');
+            document.getElementById('reservation-summary').classList.remove('active');
+            document.getElementById('selected-date-indicator').classList.remove('active');
+            
+            alert('¡Reservación creada con éxito! Se ha enviado un mensaje de confirmación a tu WhatsApp. Tu reservación está pendiente de confirmación por el administrador.');
+        }
+
+        // En sendConfirmationMessage, usar fecha formateada correctamente
+        function sendConfirmationMessage(reservation) {
+            const dateObj = new Date(reservation.date + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            let message = `Hola ${reservation.clientName},\n\n`;
+            message += `¡Gracias por tu reservación en Le Mouk Club!\n\n`;
+            message += `📋 *Detalles de tu reservación:*\n`;
+            message += `📅 Fecha: ${formattedDate}\n`;
+            message += `🪑 Mesa: ${reservation.furnitureName}\n`;
+            message += `💰 Total: ${reservation.price}\n\n`;
+            message += `⏳ *Estado: PENDIENTE DE CONFIRMACIÓN*\n\n`;
+            message += `💳 *Para confirmar tu reservación:*\n`;
+            message += `1. Realiza la transferencia a:\n`;
+            message += `   Banco: Banco Popular\n`;
+            message += `   Cuenta: 123-456789-0\n`;
+            message += `   Nombre: Le Mouk Club\n`;
+            message += `   Monto: ${reservation.price}\n\n`;
+            message += `2. Envía el comprobante a este número\n`;
+            message += `3. Te confirmaremos en máximo 12 horas\n\n`;
+			message += `4. Guarde La Informacion Para Entrar\n\n`;
+            message += `¡Esperamos verte pronto! 🎉`;
+
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://wa.me/${reservation.clientPhone}?text=${encodedMessage}`, '_blank');
+        }
+
+        // [Las funciones del panel administrativo se mantienen igual...]
+        // (showAdminLogin, showAdminPanel, initializeAdminPanel, etc.)
+
+        // Mostrar panel de administración (CONTRASEÑA OCULTA)
+        function showAdminLogin() {
+            // Crear modal personalizado para contraseña
+            const passwordModal = document.createElement('div');
+            passwordModal.className = 'modal-overlay';
+            
+            passwordModal.innerHTML = `
+                <div class="modal-content">
+                    <h3 class="modal-title">
+                        <i class="fas fa-lock"></i> Acceso Administrativo
+                    </h3>
+                    <div class="form-group">
+                        <input type="password" 
+                               id="admin-password-input" 
+                               class="form-control password-input"
+                               placeholder="Ingrese la contraseña"
+                               autocomplete="off">
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn" id="submit-password-btn">
+                            <i class="fas fa-sign-in-alt"></i> Ingresar
+                        </button>
+                        <button class="btn btn-secondary" id="cancel-password-btn">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(passwordModal);
+            
+            // Event listeners para el modal de contraseña
+            document.getElementById('submit-password-btn').addEventListener('click', function() {
+                const password = document.getElementById('admin-password-input').value;
+                if (password === 'admin') {
+                    document.body.removeChild(passwordModal);
+                    showAdminPanel();
+                } else {
+                    alert('Contraseña incorrecta.');
+                    document.getElementById('admin-password-input').value = '';
+                }
+            });
+            
+            document.getElementById('cancel-password-btn').addEventListener('click', function() {
+                document.body.removeChild(passwordModal);
+            });
+            
+            // Enter para enviar
+            document.getElementById('admin-password-input').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('submit-password-btn').click();
+                }
+            });
+            
+            // Focus en el input
+            document.getElementById('admin-password-input').focus();
+        }
+
+        // Mostrar panel administrativo
+        function showAdminPanel() {
+            document.getElementById('admin-panel').style.display = 'block';
+            document.querySelector('.reservation-section').style.display = 'none';
+            document.querySelector('.hero').style.display = 'none';
+            document.querySelector('footer').style.display = 'none';
+            
+            // Inicializar panel administrativo
+            initializeAdminPanel();
+        }
+
+        // Inicializar panel administrativo
+        function initializeAdminPanel() {
+            initializeAdminCalendar();
+            updateReservationsList();
+        }
+
+        // Inicializar calendario administrativo
+        function initializeAdminCalendar() {
+            const adminCalendarContainer = document.getElementById('admin-calendar-container');
+            adminCalendarContainer.innerHTML = '';
+
+            // Crear navegación del calendario
+            const navigationDiv = document.createElement('div');
+            navigationDiv.className = 'calendar-navigation';
+            navigationDiv.innerHTML = `
+                <button class="calendar-nav-btn" id="admin-prev-month-btn">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="current-month" id="admin-current-month-display"></div>
+                <button class="calendar-nav-btn" id="admin-next-month-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            adminCalendarContainer.appendChild(navigationDiv);
+
+            // Crear encabezados de días de la semana
+            const headerDiv = document.createElement('div');
+            headerDiv.className = 'calendar-header';
+            const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+            daysOfWeek.forEach(day => {
+                const dayHeader = document.createElement('div');
+                dayHeader.className = 'calendar-header-day';
+                dayHeader.textContent = day;
+                headerDiv.appendChild(dayHeader);
+            });
+            adminCalendarContainer.appendChild(headerDiv);
+
+            // Crear grid de días
+            const calendarGrid = document.createElement('div');
+            calendarGrid.className = 'calendar';
+            calendarGrid.id = 'admin-calendar-grid';
+            adminCalendarContainer.appendChild(calendarGrid);
+
+            // Generar el mes actual
+            generateAdminMonthCalendar();
+
+            // Agregar event listeners para navegación
+            document.getElementById('admin-prev-month-btn').addEventListener('click', adminPreviousMonth);
+            document.getElementById('admin-next-month-btn').addEventListener('click', adminNextMonth);
+        }
+
+        // Generar calendario administrativo para el mes actual
+        function generateAdminMonthCalendar() {
+            const calendarGrid = document.getElementById('admin-calendar-grid');
+            calendarGrid.innerHTML = '';
+
+            // Actualizar display del mes actual
+            document.getElementById('admin-current-month-display').textContent = 
+                getMonthName(currentCalendarMonth) + ' ' + currentCalendarYear;
+
+            const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1);
+            const lastDay = new Date(currentCalendarYear, currentCalendarMonth + 1, 0);
+            const today = new Date();
+
+            // Días del mes anterior
+            const startingDay = firstDay.getDay();
+            const prevMonthLastDay = new Date(currentCalendarYear, currentCalendarMonth, 0).getDate();
+            
+            for (let i = startingDay - 1; i >= 0; i--) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.innerHTML = `
+                    <div class="day-number">${prevMonthLastDay - i}</div>
+                `;
+                calendarGrid.appendChild(dayElement);
+            }
+
+            // Días del mes actual
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const date = new Date(currentCalendarYear, currentCalendarMonth, day);
+                const dateString = formatDateToLocal(date);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day available';
+                dayElement.setAttribute('data-date', dateString);
+                
+                // Verificar si hay reservaciones para esta fecha
+                const confirmedReservations = reservations.filter(r => r.date === dateString && r.status === 'confirmed');
+                const pendingReservations = reservations.filter(r => r.date === dateString && r.status === 'pending');
+                
+                let status = 'available';
+                let statusText = 'Disponible';
+                
+                if (confirmedReservations.length > 0) {
+                    status = 'reserved';
+                    statusText = `${confirmedReservations.length} confirmada(s)`;
+                } else if (pendingReservations.length > 0) {
+                    status = 'pending';
+                    statusText = `${pendingReservations.length} pendiente(s)`;
+                }
+                
+                dayElement.className = `calendar-day ${status}`;
+                
+                // Marcar si es hoy
+                if (isToday(date)) {
+                    dayElement.classList.add('today');
+                }
+                
+                dayElement.innerHTML = `
+                    <div class="day-number">${day}</div>
+                    <div class="day-status">${statusText}</div>
+                `;
+                
+                // Agregar event listener para mostrar detalles de reservas
+                if (confirmedReservations.length > 0 || pendingReservations.length > 0) {
+                    dayElement.style.cursor = 'pointer';
+                    dayElement.title = `Click para ver ${confirmedReservations.length + pendingReservations.length} reserva(s)`;
+                    dayElement.addEventListener('click', function() {
+                        showReservationsForDate(dateString);
+                    });
+                }
+                
+                calendarGrid.appendChild(dayElement);
+            }
+
+            // Días del siguiente mes
+            const totalCells = 42;
+            const remainingCells = totalCells - (startingDay + lastDay.getDate());
+            
+            for (let day = 1; day <= remainingCells; day++) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day other-month';
+                dayElement.innerHTML = `
+                    <div class="day-number">${day}</div>
+                `;
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        // Navegación entre meses en el panel administrativo
+        function adminPreviousMonth() {
+            currentCalendarMonth--;
+            if (currentCalendarMonth < 0) {
+                currentCalendarMonth = 11;
+                currentCalendarYear--;
+            }
+            generateAdminMonthCalendar();
+            generateMonthCalendar();
+        }
+
+        function adminNextMonth() {
+            currentCalendarMonth++;
+            if (currentCalendarMonth > 11) {
+                currentCalendarMonth = 0;
+                currentCalendarYear++;
+            }
+            generateAdminMonthCalendar();
+            generateMonthCalendar();
+        }
+
+        // Mostrar reservaciones para una fecha específica
+        function showReservationsForDate(dateString) {
+            const dateReservations = reservations.filter(r => r.date === dateString);
+            const dateObj = new Date(dateString + 'T00:00:00');
+            const formattedDate = dateObj.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+
+            let message = `Reservaciones para ${formattedDate}:\n\n`;
+            
+            if (dateReservations.length === 0) {
+                message += "No hay reservaciones para esta fecha.";
+            } else {
+                dateReservations.forEach((reservation, index) => {
+                    message += `${index + 1}. ${reservation.furnitureName} - ${reservation.price}\n`;
+                    message += `   Cliente: ${reservation.clientName || 'No especificado'}\n`;
+                    message += `   Estado: ${reservation.status === 'confirmed' ? '✅ Confirmada' : '⏳ Pendiente'}\n`;
+                    if (reservation.clientPhone) {
+                        message += `   Teléfono: ${reservation.clientPhone}\n`;
+                    }
+                    message += '\n';
+                });
+            }
+
+            alert(message);
+        }
+
+        // Actualizar lista de reservaciones
+        function updateReservationsList() {
+            const container = document.getElementById('reservations-list-container');
+            container.innerHTML = '';
+            
+            if (reservations.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #aaa;">No hay reservaciones registradas.</p>';
+                return;
+            }
+            
+            // Ordenar reservaciones por fecha (más recientes primero)
+            const sortedReservations = [...reservations].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            sortedReservations.forEach(reservation => {
+                const reservationElement = document.createElement('div');
+                reservationElement.className = 'reservation-item';
+                
+                const formattedDate = formatDateForDisplay(reservation.date);
+                const statusClass = reservation.status === 'confirmed' ? 'status-confirmed' : 'status-pending';
+                const statusText = reservation.status === 'confirmed' ? 'Confirmada' : 'Pendiente';
+                
+                reservationElement.innerHTML = `
+                    <div class="reservation-info">
+                        <h4>${reservation.furnitureName} - ${formattedDate}</h4>
+                        <p>Cliente: ${reservation.clientName}</p>
+                        <p>Teléfono: ${reservation.clientPhone || 'No especificado'}</p>
+                        <p>Precio: ${reservation.price}</p>
+                    </div>
+                    <div class="reservation-actions">
+                        <span class="status-badge ${statusClass}">${statusText}</span>
+                        <button class="btn btn-small" data-id="${reservation.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-small" data-id="${reservation.id}" style="background-color: var(--danger-color);">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(reservationElement);
+            });
+            
+            // Agregar event listeners para los botones
+            document.querySelectorAll('.reservation-actions .btn').forEach(button => {
+                const reservationId = parseInt(button.getAttribute('data-id'));
+                
+                if (button.querySelector('.fa-edit')) {
+                    button.addEventListener('click', function() {
+                        editReservation(reservationId);
+                    });
+                } else if (button.querySelector('.fa-trash')) {
+                    button.addEventListener('click', function() {
+                        deleteReservation(reservationId);
+                    });
+                }
+            });
+        }
+
+        // Editar reservación
+        function editReservation(reservationId) {
+            const reservation = reservations.find(r => r.id === reservationId);
+            if (!reservation) return;
+            
+            const newStatus = reservation.status === 'pending' ? 'confirmed' : 'pending';
+            reservation.status = newStatus;
+            
+            localStorage.setItem('mouk_reservations', JSON.stringify(reservations));
+            updateReservationsList();
+            generateMonthCalendar();
+            generateAdminMonthCalendar();
+            
+            alert(`Reservación ${newStatus === 'confirmed' ? 'confirmada' : 'marcada como pendiente'}.`);
+        }
+
+        // Eliminar reservación
+        function deleteReservation(reservationId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar esta reservación?')) {
+                return;
+            }
+            
+            reservations = reservations.filter(r => r.id !== reservationId);
+            localStorage.setItem('mouk_reservations', JSON.stringify(reservations));
+            updateReservationsList();
+            generateMonthCalendar();
+            generateAdminMonthCalendar();
+            
+            alert('Reservación eliminada.');
+        }
+
+        // Mostrar sección de reservaciones
+        function showReservationSection() {
+            document.getElementById('admin-panel').style.display = 'none';
+            document.querySelector('.reservation-section').style.display = 'block';
+            document.querySelector('.hero').style.display = 'block';
+            document.querySelector('footer').style.display = 'block';
+        }
+
+        // Exportar reservaciones
+        function exportReservations() {
+            if (reservations.length === 0) {
+                alert('No hay reservaciones para exportar.');
+                return;
+            }
+            
+            let csvContent = "Fecha,Mesa,Cliente,Telefono,Email,Precio,Estado\n";
+            
+            reservations.forEach(reservation => {
+                const formattedDate = formatDateForDisplay(reservation.date);
+                const status = reservation.status === 'confirmed' ? 'Confirmada' : 'Pendiente';
+                
+                csvContent += `"${formattedDate}","${reservation.furnitureName}","${reservation.clientName}","${reservation.clientPhone || ''}","${reservation.clientEmail || ''}","${reservation.price}","${status}"\n`;
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `reservaciones_le_mouk_${new Date().toISOString().slice(0,10)}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            alert('Reservaciones exportadas correctamente.');
+        }
+
+        // Imprimir reservaciones
+        function printReservations() {
+            window.print();
+        }
+
+        // Limpiar reservaciones pasadas
+        function cleanOldReservations() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            const initialCount = reservations.length;
+            
+            // Filtrar solo las reservaciones de fechas futuras
+            reservations = reservations.filter(reservation => {
+                const reservationDate = new Date(reservation.date + 'T00:00:00');
+                return reservationDate >= today;
+            });
+            
+            const removedCount = initialCount - reservations.length;
+            
+            if (removedCount = 0) {
+                localStorage.setItem('mouk_reservations', JSON.stringify(reservations));
+                updateReservationsList();
+                generateMonthCalendar();
+                generateAdminMonthCalendar();
+                
+                alert(`Se eliminaron ${removedCount} reservaciones de fechas pasadas.`);
+            } else {
+                alert('Biembenidos a Le Mouk, Su Lugar Preferido Para Disfrutar');
+            }
+        }
+
+        // Limpiar todas las reservaciones
+        function clearReservations() {
+            if (!confirm('¿Estás seguro de que quieres eliminar TODAS las reservaciones? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            reservations = [];
+            localStorage.setItem('mouk_reservations', JSON.stringify(reservations));
+            updateReservationsList();
+            generateMonthCalendar();
+            generateAdminMonthCalendar();
+            
+            alert('Todas las reservaciones han sido eliminadas.');
+        }
+    </script>
+</body>
+</html>

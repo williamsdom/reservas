@@ -1,0 +1,10 @@
+Calendario mensual completo
+Días organizados por semanas como un calendario tradicional
+Navegar fácilmente entre diferentes meses
+Estados de disponibilidad claramente marcados con colores
+Fechas seleccionadas resaltadas visualmente
+Día actual identificado con un borde especial
+Diseño responsive que funciona en móviles y desktop
+
+Seleccionar fechas reservada
+Identificar rápidamente qué mueble están disponibles o reservados
