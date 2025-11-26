@@ -3,1837 +3,2488 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Le Mouk Club - Reservaciones</title>
+    <title>Le Mouk Club - Reservaciones en Tiempo Real</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    
     <style>
-        /* Estilos generales */
+        :root {
+            --primary: #8a2be2;
+            --primary-dark: #7a1ad2;
+            --success: #51cf66;
+            --warning: #fcc419;
+            --danger: #ff6b6b;
+            --dark: #121212;
+            --darker: #1a1a1a;
+            --light: #fff;
+            --gray: #aaa;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
-            background-color: #0a0a0a;
-            color: #f5f5f5;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--dark);
+            color: var(--light);
             line-height: 1.6;
         }
-
+        
         .container {
+            width: 90%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 15px;
         }
-
-        /* Header */
+        
         header {
-            background-color: #1a1a1a;
-            color: #f5f5f5;
-            padding: 20px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            background-color: var(--darker);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
-
-        .header-content {
+        
+        nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
+        
         .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #d4af37;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        nav ul {
             display: flex;
-            list-style: none;
+            align-items: center;
+            gap: 10px;
         }
-
-        nav ul li {
-            margin-left: 25px;
+        
+        .logo-icon {
+            font-size: 24px;
+            color: var(--primary);
         }
-
-        nav ul li a {
-            color: #f5f5f5;
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .logo span {
+            color: var(--primary);
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .nav-links a {
+            color: var(--light);
             text-decoration: none;
             transition: color 0.3s;
-            font-weight: 500;
         }
-
-        nav ul li a:hover {
-            color: #d4af37;
+        
+        .nav-links a:hover {
+            color: var(--primary);
         }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1534533983688-c7b8e13fd3b6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-            background-size: cover;
-            background-position: center;
-            color: white;
-            text-align: center;
-            padding: 120px 0;
-        }
-
-        .hero h1 {
-            font-size: 52px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-
-        .hero p {
-            font-size: 22px;
-            max-width: 700px;
-            margin: 0 auto 30px;
-            color: #d4af37;
-        }
-
+        
         .btn {
-            display: inline-block;
-            background-color: #d4af37;
-            color: #0a0a0a;
-            padding: 14px 35px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            border: none;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn:hover {
-            background-color: #b8941f;
-        }
-
-        /* Sección de Reservación */
-        .reservation-section {
-            padding: 80px 0;
-            background-color: #111;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 50px;
-            font-size: 36px;
-            color: #d4af37;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .reservation-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-        }
-
-        /* Calendario de disponibilidad */
-        .availability-calendar {
-            background-color: #1a1a1a;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .calendar-title {
-            font-size: 22px;
-            margin-bottom: 20px;
-            color: #d4af37;
-            text-align: center;
-        }
-
-        .calendar-navigation {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 10px;
-            background-color: #2a2a2a;
+            background-color: var(--primary);
             color: white;
-            border-radius: 5px;
-        }
-
-        .calendar-nav-btn {
-            background: none;
             border: none;
-            color: #d4af37;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 8px 12px;
-            border-radius: 3px;
-            transition: background-color 0.3s;
-        }
-
-        .calendar-nav-btn:hover {
-            background-color: rgba(212, 175, 55, 0.2);
-        }
-
-        .current-month {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 3px;
-            margin-bottom: 15px;
-            background-color: #2a2a2a;
+            padding: 10px 20px;
             border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .calendar-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 3px;
-            margin-bottom: 3px;
-        }
-
-        .calendar-header-day {
-            text-align: center;
-            font-weight: bold;
-            font-size: 14px;
-            color: #d4af37;
-            padding: 12px;
-            background-color: #333;
-        }
-
-        .calendar-day {
-            padding: 12px;
-            text-align: center;
-            border-radius: 3px;
-            font-weight: bold;
-            font-size: 14px;
-            min-height: 60px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .available {
-            background-color: #2a2a2a;
-            color: #f5f5f5;
-        }
-
-        .reserved {
-            background-color: #7a1a1a;
-            color: #f5f5f5;
-        }
-
-        .selected {
-            background-color: #d4af37;
-            color: #0a0a0a;
-            box-shadow: 0 0 0 2px #b8941f;
-        }
-
-        .today {
-            border: 2px solid #d4af37;
-        }
-
-        .other-month {
-            background-color: #1a1a1a;
-            color: #555;
-            cursor: not-allowed;
-        }
-
-        .day-number {
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .day-status {
-            font-size: 10px;
-            margin-top: 4px;
-            opacity: 0.9;
-        }
-
-        .legend {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: flex;
+            font-weight: 600;
+            transition: background-color 0.3s;
+            display: inline-flex;
             align-items: center;
             gap: 8px;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
             font-size: 14px;
         }
-
-        .legend-color {
-            width: 18px;
-            height: 18px;
-            border-radius: 3px;
+        
+        .btn-secondary {
+            background-color: #333;
         }
-
-        .available-color {
-            background-color: #2a2a2a;
-            border: 1px solid #444;
+        
+        .btn-success {
+            background-color: var(--success);
         }
-
-        .reserved-color {
-            background-color: #7a1a1a;
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: #000;
         }
-
-        .selected-color {
-            background-color: #d4af37;
+        
+        .btn-danger {
+            background-color: var(--danger);
         }
-
-        .today-color {
-            background-color: transparent;
-            border: 2px solid #d4af37;
+        
+        .btn-info {
+            background-color: #17a2b8;
         }
-
-        /* Selección de muebles */
-        .furniture-selection {
-            background-color: #1a1a1a;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        
+        .btn-purple {
+            background-color: #6f42c1;
         }
-
-        .furniture-title {
-            font-size: 22px;
+        
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+                        url('https://images.unsplash.com/photo-1530103862676-de8c9debad1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80');
+            background-size: cover;
+            background-position: center;
+            padding: 100px 0;
+            text-align: center;
+        }
+        
+        .hero h2 {
+            font-size: 48px;
             margin-bottom: 20px;
-            color: #d4af37;
-            text-align: center;
         }
-
-        .furniture-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .furniture-card {
-            background-color: #2a2a2a;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-
-        .furniture-card:hover {
-            transform: translateY(-5px);
-            border-color: #d4af37;
-        }
-
-        .furniture-card.selected {
-            border-color: #d4af37;
-            background-color: rgba(212, 175, 55, 0.1);
-        }
-
-        .furniture-card.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .furniture-card.disabled:hover {
-            transform: none;
-            border-color: transparent;
-        }
-
-        .furniture-image {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            border-radius: 5px;
-            margin-bottom: 10px;
-        }
-
-        .furniture-name {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .furniture-details {
-            color: #aaa;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        .furniture-status {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 12px;
-            display: inline-block;
-        }
-
-        .status-available {
-            background-color: #2e7d32;
-            color: white;
-        }
-
-        .status-reserved {
-            background-color: #c62828;
-            color: white;
-        }
-
-        .reservation-summary {
-            background-color: #2a2a2a;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-
-        .summary-title {
+        
+        .hero p {
             font-size: 18px;
-            margin-bottom: 15px;
-            color: #d4af37;
+            max-width: 700px;
+            margin: 0 auto 30px;
+            color: var(--gray);
         }
-
-        .summary-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .summary-detail {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #444;
-        }
-
-        .summary-total {
-            display: flex;
-            justify-content: space-between;
-            font-size: 18px;
-            font-weight: bold;
-            padding-top: 10px;
-            border-top: 2px solid #444;
-            color: #d4af37;
-        }
-
-        .reservation-actions {
+        
+        .hero-buttons {
             display: flex;
             gap: 15px;
-            margin-top: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
-
-        /* Footer */
-        footer {
-            background-color: #1a1a1a;
-            color: #f5f5f5;
-            padding: 40px 0;
+        
+        .section-title {
             text-align: center;
+            font-size: 36px;
+            margin-bottom: 40px;
+            position: relative;
         }
-
-        .footer-content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: var(--primary);
         }
-
-        .footer-logo {
+        
+        .reservation-section {
+            padding: 80px 0;
+        }
+        
+        .social-section {
+            padding: 80px 0;
+            background-color: var(--darker);
+        }
+        
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .social-card {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            padding: 40px 30px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .social-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(138, 43, 226, 0.3);
+        }
+        
+        .social-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .social-card h3 {
             font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #d4af37;
+            margin-bottom: 15px;
         }
-
-        .footer-links {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
+        
+        .social-card p {
+            margin-bottom: 25px;
+            color: rgba(255, 255, 255, 0.8);
         }
-
-        .footer-links a {
-            color: #f5f5f5;
-            text-decoration: none;
-        }
-
-        .footer-links a:hover {
-            color: #d4af37;
-        }
-
-        .copyright {
-            margin-top: 20px;
-            color: #777;
-        }
-
-        /* Panel administrativo */
-        .admin-panel {
-            display: none;
-            padding: 40px 0;
-            background-color: #111;
-            min-height: 100vh;
-        }
-
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
+        
+        .social-link {
+            display: inline-flex;
             align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 12px 25px;
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+        
+        .social-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .selected-date-indicator {
+            background-color: var(--darker);
+            padding: 15px;
+            border-radius: 8px;
             margin-bottom: 30px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #d4af37;
-        }
-
-        .admin-title {
-            font-size: 32px;
-            color: #d4af37;
-        }
-
-        .admin-actions {
+            text-align: center;
             display: flex;
-            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
-
-        .admin-container {
+        
+        .reservation-process {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
             margin-bottom: 40px;
         }
-
-        .reservations-list {
-            background-color: #1a1a1a;
+        
+        @media (max-width: 768px) {
+            .reservation-process {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .calendar-container, .furniture-container {
+            background-color: var(--darker);
             padding: 25px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            max-height: 600px;
-            overflow-y: auto;
         }
-
-        .reservations-title {
-            font-size: 22px;
+        
+        .calendar-container h3, .furniture-container h3 {
             margin-bottom: 20px;
-            color: #d4af37;
+            font-size: 22px;
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+        }
+        
+        .calendar-header {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
             text-align: center;
+            font-weight: bold;
+            margin-bottom: 10px;
         }
-
-        .reservation-item {
-            background-color: #2a2a2a;
-            padding: 15px;
+        
+        .calendar-day {
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            position: relative;
+        }
+        
+        .calendar-day:hover {
+            background-color: #333;
+        }
+        
+        .calendar-day.selected {
+            background-color: var(--primary);
+        }
+        
+        .calendar-day.disabled {
+            color: #666;
+            cursor: not-allowed;
+        }
+        
+        .calendar-day.has-reservations {
+            background-color: rgba(255, 107, 107, 0.1);
+        }
+        
+        .calendar-day.has-pending {
+            background-color: rgba(252, 196, 25, 0.1);
+        }
+        
+        .reservation-count {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .pending-count {
+            background: var(--warning);
+            color: #000;
+        }
+        
+        .furniture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .furniture-card {
+            background-color: #222;
             border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #d4af37;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
         }
-
-        .reservation-header {
+        
+        .furniture-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .furniture-card.selected {
+            border-color: var(--primary);
+        }
+        
+        .furniture-card.available {
+            border-color: var(--success);
+            cursor: pointer;
+        }
+        
+        .furniture-card.reserved {
+            border-color: var(--danger);
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        
+        .furniture-card.pending {
+            border-color: var(--warning);
+            cursor: not-allowed;
+        }
+        
+        .furniture-card.disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .furniture-icon {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .furniture-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .furniture-details {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        
+        .status-available {
+            background-color: var(--success);
+            color: #000;
+        }
+        
+        .status-reserved {
+            background-color: var(--danger);
+            color: #fff;
+        }
+        
+        .status-pending {
+            background-color: var(--warning);
+            color: #000;
+        }
+        
+        .reservation-summary {
+            background-color: var(--darker);
+            padding: 25px;
+            border-radius: 10px;
+        }
+        
+        .summary-title {
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        .summary-details {
+            margin-bottom: 20px;
+        }
+        
+        .summary-item, .summary-total {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #333;
+        }
+        
+        .summary-total {
+            font-weight: bold;
+            font-size: 18px;
+            border-bottom: none;
+            margin-top: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #444;
+            background-color: #222;
+            color: var(--light);
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .admin-panel {
+            padding: 80px 0;
+            display: none;
+        }
+        
+        .admin-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 30px;
         }
-
-        .reservation-id {
-            font-weight: bold;
-            color: #d4af37;
+        
+        .admin-actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
         }
-
+        
+        .sync-section {
+            background-color: var(--darker);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .config-info {
+            background-color: #222;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .reservations-list {
+            background-color: var(--darker);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .furniture-management {
+            background-color: var(--darker);
+            padding: 25px;
+            border-radius: 10px;
+        }
+        
+        .reservation-item {
+            background-color: #222;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .reservation-item.confirmed {
+            border-left-color: var(--success);
+        }
+        
+        .reservation-item.cancelled {
+            border-left-color: var(--danger);
+            opacity: 0.7;
+        }
+        
+        .reservation-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
         .reservation-date {
-            font-size: 14px;
-            color: #aaa;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
         }
-
+        
         .reservation-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .reservation-detail {
+            color: var(--gray);
             font-size: 14px;
+            margin-bottom: 5px;
         }
-
+        
+        .reservation-client {
+            color: var(--light);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
         .reservation-actions {
             display: flex;
             gap: 10px;
             margin-top: 10px;
         }
-
-        .btn-whatsapp {
-            background-color: #25D366;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
+        
+        .reservation-status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
             font-weight: bold;
-            transition: background-color 0.3s;
+            margin-top: 5px;
+        }
+        
+        .status-pending-badge {
+            background-color: var(--warning);
+            color: #000;
+        }
+        
+        .status-confirmed-badge {
+            background-color: var(--success);
+            color: #000;
+        }
+        
+        .status-cancelled-badge {
+            background-color: var(--danger);
+            color: #fff;
+        }
+        
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1001;
             display: flex;
             align-items: center;
             gap: 5px;
-            font-size: 12px;
         }
-
-        .btn-whatsapp:hover {
-            background-color: #128C7E;
+        
+        .online {
+            background-color: var(--success);
+            color: #000;
         }
-
-        .btn-danger {
-            background-color: #c62828;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background-color 0.3s;
+        
+        .offline {
+            background-color: var(--danger);
+            color: #fff;
+        }
+        
+        .sync-status {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 12px;
-        }
-
-        .btn-danger:hover {
-            background-color: #b71c1c;
-        }
-
-        .no-reservations {
-            text-align: center;
-            color: #777;
-            padding: 40px 20px;
-            font-style: italic;
-        }
-
-        .admin-calendar {
-            background-color: #1a1a1a;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-
-        .add-reservation-form {
-            background-color: #1a1a1a;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            margin-top: 30px;
-        }
-
-        .form-title {
-            font-size: 22px;
-            margin-bottom: 20px;
-            color: #d4af37;
-            text-align: center;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: #f5f5f5;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #444;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #222;
             border-radius: 5px;
-            font-size: 16px;
-            background-color: #2a2a2a;
-            color: #f5f5f5;
         }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        /* Modal de confirmación */
-        .confirmation-modal {
+        
+        .modal {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.8);
+            background-color: rgba(0, 0, 0, 0.8);
             z-index: 2000;
             justify-content: center;
             align-items: center;
         }
-
-        .confirmation-content {
-            background-color: #1a1a1a;
+        
+        .modal-content {
+            background-color: var(--darker);
             padding: 30px;
             border-radius: 10px;
-            max-width: 500px;
             width: 90%;
-            text-align: center;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-
-        .confirmation-title {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #d4af37;
-        }
-
-        .confirmation-message {
-            margin-bottom: 25px;
-            line-height: 1.6;
-        }
-
-        .confirmation-actions {
+        
+        .modal-header {
             display: flex;
-            gap: 15px;
-            justify-content: center;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 20px;
         }
-
-        /* Enlace al panel administrativo */
-        .admin-link {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #d4af37;
-            color: #0a0a0a;
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
+        
+        .modal-title {
+            font-size: 24px;
             font-weight: bold;
-            z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-
-        .admin-link:hover {
-            background-color: #b8941f;
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--light);
+            font-size: 24px;
+            cursor: pointer;
         }
-
-        /* Responsive */
+        
+        .login-form {
+            background-color: var(--darker);
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background-color: #fff;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+        
+        /* Estilos para impresión */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-reservations, #printable-reservations * {
+                visibility: visible;
+            }
+            #printable-reservations {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white;
+                color: black;
+                padding: 20px;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+        
+        .whatsapp-info {
+            background-color: rgba(37, 211, 102, 0.1);
+            border: 1px solid #25d366;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .whatsapp-info h4 {
+            color: #25d366;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .furniture-management-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .furniture-management-card {
+            background-color: #222;
+            border-radius: 8px;
+            padding: 15px;
+            border: 2px solid #333;
+        }
+        
+        .furniture-management-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .links-management {
+            background-color: var(--darker);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .link-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background-color: #222;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .link-info {
+            flex: 1;
+        }
+        
+        .link-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .link-url {
+            color: var(--gray);
+            font-size: 14px;
+            word-break: break-all;
+        }
+        
         @media (max-width: 768px) {
-            .header-content {
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .nav-links {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: var(--darker);
                 flex-direction: column;
-                text-align: center;
+                padding: 20px;
             }
-
-            nav ul {
-                margin-top: 15px;
-                flex-wrap: wrap;
-                justify-content: center;
+            
+            .nav-links.active {
+                display: flex;
             }
-
-            nav ul li {
-                margin: 5px 10px;
-            }
-
-            .hero h1 {
+            
+            .hero h2 {
                 font-size: 36px;
             }
-
-            .hero p {
-                font-size: 18px;
-            }
             
-            .reservation-container {
-                grid-template-columns: 1fr;
-            }
-            
-            .calendar-day {
-                padding: 8px;
-                font-size: 12px;
-                min-height: 50px;
-            }
-            
-            .day-number {
-                font-size: 14px;
-            }
-            
-            .day-status {
-                font-size: 9px;
-            }
-            
-            .calendar-header-day {
-                font-size: 12px;
-                padding: 8px;
-            }
-            
-            .calendar-navigation {
+            .admin-header {
                 flex-direction: column;
-                gap: 10px;
-            }
-            
-            .furniture-grid {
-                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 15px;
             }
             
             .reservation-actions {
                 flex-direction: column;
             }
-
-            .admin-container {
-                grid-template-columns: 1fr;
-            }
             
-            .reservations-list {
-                max-height: 400px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .reservation-details {
-                grid-template-columns: 1fr;
-            }
-            
-            .confirmation-actions {
+            .furniture-management-actions {
                 flex-direction: column;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .link-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
             }
         }
     </style>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <!-- Enlace al panel administrativo -->
-    <a href="#" class="admin-link" id="admin-login-link">
-        <i class="fas fa-user-shield"></i> Admin
-    </a>
+    <!-- Status de Conexión -->
+    <div class="connection-status" id="connection-status">
+        <i class="fas fa-wifi"></i>
+        <span id="status-text">Conectando...</span>
+    </div>
+
+    <!-- Modal de Login -->
+    <div class="modal" id="login-modal">
+        <div class="login-form">
+            <div class="modal-header">
+                <h2 class="modal-title">Acceso Administrativo</h2>
+            </div>
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label class="form-label">Usuario</label>
+                    <input type="text" class="form-control" id="admin-username" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="admin-password" required>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> Ingresar
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Datos del Cliente -->
+    <div class="modal" id="client-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Datos del Cliente</h2>
+                <button class="modal-close" id="client-modal-close">&times;</button>
+            </div>
+            <form id="client-form">
+                <div class="form-group">
+                    <label class="form-label">Nombre *</label>
+                    <input type="text" class="form-control" id="client-name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Apellido *</label>
+                    <input type="text" class="form-control" id="client-lastname" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">WhatsApp *</label>
+                    <input type="tel" class="form-control" id="client-whatsapp" required 
+                           placeholder="+1 809 123 4567">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Notas (opcional)</label>
+                    <textarea class="form-control" id="client-notes" rows="3" 
+                              placeholder="Comentarios adicionales..."></textarea>
+                </div>
+                
+                <div class="whatsapp-info">
+                    <h4><i class="fab fa-whatsapp"></i> Información de Pago</h4>
+                    <p>Después de enviar tu solicitud, recibirás un mensaje por WhatsApp con los detalles para realizar el pago y confirmar tu reserva.</p>
+                    <p><strong>Banco:</strong> Banco Popular Dominicano</p>
+                    <p><strong>Cuenta:</strong> 123-456789-0</p>
+                    <p><strong>Titular:</strong> Le Mouk Club</p>
+                </div>
+                
+                <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 20px;">
+                    <i class="fas fa-paper-plane"></i> Enviar Solicitud de Reservación
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar mesa -->
+    <div class="modal" id="furniture-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="furniture-modal-title">Agregar Nueva Mesa</h2>
+                <button class="modal-close" id="furniture-modal-close">&times;</button>
+            </div>
+            <form id="furniture-form">
+                <input type="hidden" id="furniture-edit-id">
+                <div class="form-group">
+                    <label class="form-label">Nombre de la Mesa *</label>
+                    <input type="text" class="form-control" id="furniture-name" required 
+                           placeholder="Ej: Mesa VIP 1">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Capacidad *</label>
+                    <input type="number" class="form-control" id="furniture-capacity" required 
+                           min="1" max="60" placeholder="Ej: 6">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Precio *</label>
+                    <input type="number" class="form-control" id="furniture-price" required 
+                           min="0" placeholder="Ej: 5000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Icono *</label>
+                    <select class="form-control" id="furniture-icon" required>
+                        <option value="crown">Corona (VIP)</option>
+                        <option value="chair">Silla (Estándar)</option>
+                        <option value="users">Grupo (Grande)</option>
+                        <option value="user-friends">Pareja (Pequeña)</option>
+                        <option value="couch">Sofá</option>
+                        <option value="wine-glass">Copa</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 20px;">
+                    <i class="fas fa-save"></i> Guardar Mesa
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para editar enlaces -->
+    <div class="modal" id="links-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Editar Enlaces</h2>
+                <button class="modal-close" id="links-modal-close">&times;</button>
+            </div>
+            <form id="links-form">
+                <div class="form-group">
+                    <label class="form-label">Enlace de Evento *</label>
+                    <input type="url" class="form-control" id="link-evento" required 
+                           placeholder="https://ejemplo.com/evento">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Enlace de Posición de Muebles *</label>
+                    <input type="url" class="form-control" id="link-posicione-mueble" required 
+                           placeholder="https://ejemplo.com/posicion-muebles">
+                </div>
+                <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 20px;">
+                    <i class="fas fa-save"></i> Guardar Enlaces
+                </button>
+            </form>
+        </div>
+    </div>
 
     <!-- Header -->
     <header>
         <div class="container">
-            <div class="header-content">
-                <div class="logo">Le Mouk Club</div>
-                <nav>
-                    <ul>
-                        <li><a href="#inicio">Inicio</a></li>
-                        <li><a href="#reservaciones">Reservaciones</a></li>
-                        <li><a href="#contacto">Contacto</a></li>
-                    </ul>
-                </nav>
-            </div>
+            <nav>
+                <div class="logo">
+                    <i class="fas fa-couch logo-icon"></i>
+                    <h1>Le Mouk <span>Club</span></h1>
+                </div>
+                
+                <button class="menu-toggle" id="menu-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <div class="nav-links" id="nav-links">
+                    <a href="#reservations">Reservaciones</a>
+                    <a href="#social">Redes Sociales</a>
+                    <a href="#contact">Contacto</a>
+                    <button class="btn btn-small" id="admin-login-btn">
+                        <i class="fas fa-user-shield"></i> Admin
+                    </button>
+                </div>
+            </nav>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero" id="inicio">
+    <section class="hero">
         <div class="container">
-            <h1>Le Mouk Club</h1>
-            <p>Reserva tu experiencia exclusiva en el club más exclusivo de la ciudad</p>
-            <a href="#reservaciones" class="btn">Reservar Ahora</a>
+            <h2>Reserva tu experiencia exclusiva</h2>
+            <p>Disfruta de una noche inolvidable en el club más exclusivo de Santiago. Reserva tu mesa preferida con anticipación.</p>
+            <div class="hero-buttons">
+                <button class="btn" id="reserve-now-btn">
+                    <i class="fas fa-calendar-plus"></i> Reservar Ahora
+                </button>
+                <a href="#" target="_blank" class="btn btn-info" id="evento-link">
+                    <i class="fas fa-calendar-alt"></i> Evento
+                </a>
+                <a href="#" target="_blank" class="btn btn-purple" id="posicione-mueble-link">
+                    <i class="fas fa-chair"></i> Posicione Mueble
+                </a>
+            </div>
         </div>
     </section>
 
-    <!-- Sección de Reservación -->
-    <section class="reservation-section" id="reservaciones">
+    <!-- Reservation Section -->
+    <section class="reservation-section" id="reservations">
         <div class="container">
             <h2 class="section-title">Reserva tu Mesa</h2>
-            <div class="reservation-container">
-                <!-- Calendario de disponibilidad -->
-                <div class="availability-calendar">
-                    <h3 class="calendar-title">Disponibilidad</h3>
-                    <div id="calendar-container">
-                        <!-- El calendario se cargará aquí con JavaScript -->
-                    </div>
-                    <div class="legend">
-                        <div class="legend-item">
-                            <div class="legend-color available-color"></div>
-                            <span>Disponible</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color reserved-color"></div>
-                            <span>Reservado</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color selected-color"></div>
-                            <span>Seleccionado</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color today-color"></div>
-                            <span>Hoy</span>
-                        </div>
+            
+            <div class="selected-date-indicator" id="selected-date-indicator">
+                <i class="fas fa-calendar-day"></i>
+                Fecha seleccionada: <span id="selected-date-text"></span>
+            </div>
+            
+            <div class="reservation-process">
+                <div class="calendar-container">
+                    <h3>Selecciona una Fecha</h3>
+                    <div id="calendar-container"></div>
+                </div>
+                
+                <div class="furniture-container" id="furniture-container">
+                    <h3>Selecciona tu Mesa</h3>
+                    <p style="color: #aaa; margin-bottom: 15px; font-size: 14px;">
+                        <i class="fas fa-info-circle"></i> 
+                        <span style="color: #51cf66;">✅ Disponible</span> | 
+                        <span style="color: #fcc419;">⏳ Pendiente</span> | 
+                        <span style="color: #ff6b6b;">❌ Confirmada</span>
+                    </p>
+                    <div class="furniture-grid" id="furniture-grid">
+                        <!-- Las mesas se cargarán aquí -->
                     </div>
                 </div>
+            </div>
+            
+            <div class="reservation-summary" id="reservation-summary">
+                <h3 class="summary-title">Resumen de tu Reservación</h3>
+                <div class="summary-details">
+                    <div class="summary-item">
+                        <span>Fecha:</span>
+                        <span id="summary-date">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Mesa:</span>
+                        <span id="summary-furniture">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Capacidad:</span>
+                        <span id="summary-capacity">-</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Precio:</span>
+                        <span id="summary-price">-</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total:</span>
+                        <span id="summary-total">-</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-success" id="confirm-reservation-btn" style="width: 100%; margin-top: 15px;">
+                    <i class="fas fa-check-circle"></i> Solicitar Reservación
+                </button>
+            </div>
+        </div>
+    </section>
 
-                <!-- Selección de muebles -->
-                <div class="furniture-selection">
-                    <h3 class="furniture-title">Selecciona tu Mesa</h3>
-                    <div class="furniture-grid" id="furniture-container">
-                        <!-- Los muebles se cargarán aquí con JavaScript -->
-                    </div>
-                    
-                    <div class="reservation-summary" id="reservation-summary" style="display: none;">
-                        <h4 class="summary-title">Resumen de Reserva</h4>
-                        <div class="summary-details">
-                            <div class="summary-detail">
-                                <span>Fecha:</span>
-                                <span id="summary-date">-</span>
-                            </div>
-                            <div class="summary-detail">
-                                <span>Mesa:</span>
-                                <span id="summary-furniture">-</span>
-                            </div>
-                            <div class="summary-detail">
-                                <span>Capacidad:</span>
-                                <span id="summary-capacity">-</span>
-                            </div>
-                            <div class="summary-detail">
-                                <span>Precio:</span>
-                                <span id="summary-price">-</span>
-                            </div>
-                        </div>
-                        <div class="summary-total">
-                            <span>Total:</span>
-                            <span id="summary-total">$0</span>
-                        </div>
-                        
-                        <div class="reservation-actions">
-                            <button class="btn" id="confirm-reservation-btn">
-                                <i class="fas fa-check"></i> Confirmar Reserva
-                            </button>
-                            <button class="btn" style="background-color: #444;" id="reset-reservation-btn">
-                                <i class="fas fa-times"></i> Cancelar
-                            </button>
-                        </div>
-                    </div>
+    <!-- Social Media Section -->
+    <section class="social-section" id="social">
+        <div class="container">
+            <h2 class="section-title">Síguenos en Redes Sociales</h2>
+            <p style="text-align: center; margin-bottom: 40px; font-size: 18px; color: var(--gray);">
+                Mantente conectado con nosotros y descubre nuestras últimas novedades, eventos y promociones.
+            </p>
+            
+            <div class="social-grid">
+                <div class="social-card">
+                    <i class="fab fa-instagram social-icon"></i>
+                    <h3>Instagram</h3>
+                    <p>Sigue nuestro Instagram para ver fotos y videos exclusivos de nuestros eventos y ambiente.</p>
+                    <a href="https://instagram.com/lemoukclub" target="_blank" class="social-link">
+                        <i class="fab fa-instagram"></i>
+                        @lemoukclub
+                    </a>
+                </div>
+                
+                <div class="social-card">
+                    <i class="fab fa-facebook social-icon"></i>
+                    <h3>Facebook</h3>
+                    <p>Únete a nuestra comunidad en Facebook y entérate de todos nuestros eventos y promociones.</p>
+                    <a href="https://facebook.com/lemoukclub" target="_blank" class="social-link">
+                        <i class="fab fa-facebook"></i>
+                        Le Mouk Club
+                    </a>
                 </div>
             </div>
         </div>
     </section>
 
+    <!-- Admin Panel -->
+    <section class="admin-panel" id="admin-panel">
+        <div class="container">
+            <div class="admin-header">
+                <h2 class="section-title">Panel de Administración</h2>
+                <button class="btn" id="back-to-reservations-btn">
+                    <i class="fas fa-arrow-left"></i> Volver a Reservaciones
+                </button>
+            </div>
+            
+            <div class="admin-actions">
+                <button class="btn btn-danger" id="clear-reservations-btn">
+                    <i class="fas fa-trash"></i> Limpiar Todas las Reservaciones
+                </button>
+                <button class="btn btn-secondary" id="print-reservations-btn">
+                    <i class="fas fa-print"></i> Imprimir Reservaciones Confirmadas
+                </button>
+                <button class="btn btn-success" id="add-furniture-btn">
+                    <i class="fas fa-plus"></i> Agregar Mesa
+                </button>
+                <button class="btn btn-info" id="edit-links-btn">
+                    <i class="fas fa-link"></i> Editar Enlaces
+                </button>
+            </div>
+
+            <!-- Información de Firebase -->
+            <div class="sync-section">
+                <h3><i class="fas fa-database"></i> Sistema en Tiempo Real</h3>
+                
+                <div class="sync-status" id="sync-status" style="display: none;">
+                    <i class="fas fa-sync fa-spin"></i>
+                    <span id="sync-message">Sincronizando...</span>
+                </div>
+                
+                <div class="config-info">
+                    <p><strong>Estado:</strong> <span id="firebase-status">Conectando...</span></p>
+                    <p><strong>Total reservaciones:</strong> <span id="total-reservations">0</span></p>
+                    <p><strong>Pendientes:</strong> <span id="pending-reservations">0</span></p>
+                    <p><strong>Confirmadas:</strong> <span id="confirmed-reservations">0</span></p>
+                    <p><strong>Total mesas:</strong> <span id="total-furniture">0</span></p>
+                </div>
+            </div>
+            
+            <div class="calendar-container">
+                <h3>Calendario de Reservaciones</h3>
+                <div id="admin-calendar-container"></div>
+            </div>
+            
+            <div class="reservations-list">
+                <h3>Gestión de Reservaciones</h3>
+                <div id="reservations-list-container">
+                    <!-- Las reservaciones se cargarán aquí -->
+                </div>
+            </div>
+            
+            <div class="links-management">
+                <h3>Gestión de Enlaces</h3>
+                <p style="color: #aaa; margin-bottom: 15px;">Administra los enlaces utilizados en la página principal.</p>
+                <div id="links-list-container">
+                    <!-- Los enlaces se cargarán aquí -->
+                </div>
+            </div>
+            
+            <div class="furniture-management">
+                <h3>Gestión de Mesas</h3>
+                <p style="color: #aaa; margin-bottom: 15px;">Agrega, edita o elimina mesas disponibles para reservación.</p>
+                <div class="furniture-management-grid" id="furniture-management-grid">
+                    <!-- Las mesas para gestión se cargarán aquí -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección para impresión (oculta por defecto) -->
+    <div id="printable-reservations" style="display: none;">
+        <h2>Reservaciones Confirmadas - Le Mouk Club</h2>
+        <div id="print-content"></div>
+    </div>
+
     <!-- Footer -->
-    <footer id="contacto">
+    <footer id="contact">
         <div class="container">
             <div class="footer-content">
-                <div class="footer-logo">Le Mouk Club</div>
-                <div class="footer-links">
-                    <a href="#inicio">Inicio</a>
-                    <a href="#reservaciones">Reservaciones</a>
-                    <a href="#contacto">Contacto</a>
-                    <a href="tel:+1234567890">
-                        <i class="fas fa-phone"></i> Llamar
-                    </a>
+                <div class="footer-section">
+                    <h3>Le Mouk Club</h3>
+                    <p>El lugar perfecto para disfrutar de noches inolvidables con amigos, buena música y el mejor ambiente.</p>
                 </div>
-                <p>Dirección: Av. Principal 123, Ciudad</p>
-                <p>Teléfono: (123) 456-7890</p>
-                <p class="copyright">&copy; 2025 Le Mouk Club. Todos los derechos reservados.</p>
+                <div class="footer-section">
+                    <h3>Horario</h3>
+                    <p>Martes - Jueves: 8:00 PM - 2:00 AM</p>
+                    <p>Viernes - Domingo: 8:00 PM - 3:00 AM</p>
+                    <p>Lunes Cerrado</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Contacto</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> Av. 27 de Febrero, Santiago</p>
+                    <p><i class="fas fa-phone"></i> 1 809 715 9002</p>
+                    <p><i class="fas fa-envelope"></i> lemoukclub@Hotmail.com</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 Le Mouk Club. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Panel Administrativo -->
-    <section class="admin-panel" id="admin-panel">
-        <div class="container">
-            <div class="admin-header">
-                <h1 class="admin-title">Panel de Administración</h1>
-                <div class="admin-actions">
-                    <button class="btn" id="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
-                    </button>
-                </div>
-            </div>
-            
-            <div class="admin-container">
-                <div class="reservations-list">
-                    <h3 class="reservations-title">Reservaciones Activas</h3>
-                    <div id="reservations-list">
-                        <!-- Las reservaciones se cargarán aquí -->
-                    </div>
-                </div>
-                
-                <div class="admin-calendar">
-                    <h3 class="calendar-title">Calendario de Reservaciones</h3>
-                    <div id="admin-calendar-container">
-                        <!-- El calendario administrativo se cargará aquí -->
-                    </div>
-                </div>
-            </div>
-            
-            <div class="add-reservation-form">
-                <h3 class="form-title">Agregar Reservación Manual</h3>
-                <form id="add-reservation-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="client-name">Nombre del Cliente</label>
-                            <input type="text" id="client-name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="client-phone">Teléfono</label>
-                            <input type="tel" id="client-phone" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="reservation-date">Fecha de Reservación</label>
-                            <input type="date" id="reservation-date" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="furniture-select">Seleccionar Mesa</label>
-                            <select id="furniture-select" required>
-                                <option value="">Selecciona una mesa</option>
-                                <!-- Las opciones se cargarán dinámicamente -->
-                            </select>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn">
-                        <i class="fas fa-plus"></i> Agregar Reservación
-                    </button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- Modal de confirmación para WhatsApp -->
-    <div class="confirmation-modal" id="whatsapp-modal">
-        <div class="confirmation-content">
-            <h3 class="confirmation-title">Enviar Mensaje por WhatsApp</h3>
-            <div class="confirmation-message" id="whatsapp-message">
-                <!-- El mensaje se generará dinámicamente -->
-            </div>
-            <div class="confirmation-actions">
-                <button class="btn" id="send-whatsapp-btn">
-                    <i class="fab fa-whatsapp"></i> Enviar por WhatsApp
-                </button>
-                <button class="btn" style="background-color: #444;" id="cancel-whatsapp-btn">
-                    <i class="fas fa-times"></i> Cancelar
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Datos de ejemplo para el sistema
-        const furnitureData = [
-            {
-                id: 1,
-                name: "Mesa VIP 1",
-                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-                capacity: "4 personas",
-                price: "$150",
-                status: "available"
-            },
-            {
-                id: 2,
-                name: "Mesa VIP 2",
-                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-                capacity: "6 personas",
-                price: "$200",
-                status: "available"
-            },
-            {
-                id: 3,
-                name: "Mesa Premium",
-                image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-                capacity: "8 personas",
-                price: "$300",
-                status: "available"
-            },
-            {
-                id: 4,
-                name: "Sofá Lounge",
-                image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-                capacity: "5 personas",
-                price: "$250",
-                status: "available"
+        // =============================================
+        // CONFIGURACIÓN FIREBASE - ¡REEMPLAZA ESTOS DATOS!
+        // =============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCmpyzCWcG9ofugL-y3xMHMOk_583Re7YY",
+            authDomain: "lemouk-b5b52.firebaseapp.com",
+            databaseURL: "https://lemouk-b5b52-default-rtdb.firebaseio.com",
+            projectId: "lemouk-b5b52",
+            storageBucket: "lemouk-b5b52.firebasestorage.app",
+            messagingSenderId: "493120119644",
+            appId: "1:493120119644:web:7cbd8a74e3ae835ec15799",
+            measurementId: "G-S9YYH7NKX4"
+        };
+
+        // =============================================
+        // CONFIGURACIÓN ADMIN
+        // =============================================
+        const ADMIN_CREDENTIALS = {
+            username: "admin",
+            password: "2025"
+        };
+
+        // =============================================
+        // CONFIGURACIÓN WHATSAPP
+        // =============================================
+        const WHATSAPP_CONFIG = {
+            companyNumber: "1 809 715 9002", // Número de la compañía
+            bankInfo: {
+                name: "Banco Popular Dominicano",
+                account: "123-456789-0",
+                holder: "Le Mouk Club"
             }
-        ];
+        };
+
+        // =============================================
+        // CONFIGURACIÓN DE ENLACES (valores por defecto)
+        // =============================================
+        const DEFAULT_LINKS = {
+            evento: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPmJXEb6P7JFPnGx_AXokFYxbXM62D5SQSfQ&s.jpg",
+            posicioneMueble: "https://drive.google.com/file/d/1F2BnpWFaVwuLWFZmWbAInmuFsQjpbRVP/view?usp=drive_link"
+        };
+
+        // =============================================
+        // INICIALIZACIÓN DE LA APLICACIÓN
+        // =============================================
+        console.log('🚀 Iniciando Le Mouk Club App...');
 
         // Variables globales
-        let currentCalendarMonth = new Date().getMonth();
-        let currentCalendarYear = new Date().getFullYear();
         let selectedDate = null;
         let selectedFurniture = null;
-        let reservations = JSON.parse(localStorage.getItem('mouk_reservations')) || [];
-        let currentReservationForWhatsApp = null;
+        let reservations = [];
+        let furniture = [];
+        let links = {};
+        let db;
+        let isAdminLoggedIn = false;
 
-        // Inicializar la aplicación
+        // Inicializar Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+            console.log('✅ Firebase inicializado correctamente');
+            updateConnectionStatus('online', 'Conectado');
+        } catch (error) {
+            console.error('❌ Error inicializando Firebase:', error);
+            updateConnectionStatus('offline', 'Error de conexión');
+        }
+
+        // Inicializar aplicación cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
-            initializeCalendar();
-            loadFurniture();
+            initializeApp();
             setupEventListeners();
-            
-            // Cargar reservaciones existentes
-            updateReservationsList();
+            loadInitialFurnitureData();
+            if (db) {
+                setupFirebaseListeners();
+            }
         });
 
-        // Inicializar calendario
-        function initializeCalendar() {
-            generateCalendar();
+        function initializeApp() {
+            console.log('Inicializando aplicación...');
+            renderCalendar();
+            document.getElementById('furniture-container').style.display = 'none';
+            document.getElementById('reservation-summary').style.display = 'none';
+            
+            // Cargar enlaces por defecto
+            links = {...DEFAULT_LINKS};
+            updateLinksInUI();
         }
 
-        // Generar calendario completo
-        function generateCalendar() {
-            const calendarContainer = document.getElementById('calendar-container');
-            calendarContainer.innerHTML = '';
-
-            // Crear navegación del calendario
-            const navigationDiv = document.createElement('div');
-            navigationDiv.className = 'calendar-navigation';
-            navigationDiv.innerHTML = `
-                <button class="calendar-nav-btn" id="prev-month-btn">
-                    <i class="fas fa-chevron-left"></i> Mes Anterior
-                </button>
-                <div class="current-month" id="current-month-display"></div>
-                <button class="calendar-nav-btn" id="next-month-btn">
-                    Mes Siguiente <i class="fas fa-chevron-right"></i>
-                </button>
-            `;
-            calendarContainer.appendChild(navigationDiv);
-
-            // Crear encabezados de días de la semana
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'calendar-header';
-            const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-            daysOfWeek.forEach(day => {
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'calendar-header-day';
-                dayHeader.textContent = day;
-                headerDiv.appendChild(dayHeader);
+        function setupEventListeners() {
+            // Navegación
+            document.getElementById('menu-toggle').addEventListener('click', toggleMobileMenu);
+            document.getElementById('admin-login-btn').addEventListener('click', showLoginModal);
+            document.getElementById('back-to-reservations-btn').addEventListener('click', hideAdminPanel);
+            document.getElementById('reserve-now-btn').addEventListener('click', scrollToReservations);
+            
+            // Reservaciones
+            document.getElementById('confirm-reservation-btn').addEventListener('click', showClientModal);
+            
+            // Modales
+            document.getElementById('client-modal-close').addEventListener('click', hideClientModal);
+            document.getElementById('admin-login-form').addEventListener('submit', handleAdminLogin);
+            document.getElementById('client-form').addEventListener('submit', handleClientReservation);
+            
+            // Admin
+            document.getElementById('clear-reservations-btn').addEventListener('click', clearReservations);
+            document.getElementById('print-reservations-btn').addEventListener('click', printReservations);
+            document.getElementById('add-furniture-btn').addEventListener('click', showAddFurnitureModal);
+            document.getElementById('edit-links-btn').addEventListener('click', showLinksModal);
+            
+            // Modal de mesas
+            document.getElementById('furniture-modal-close').addEventListener('click', hideFurnitureModal);
+            document.getElementById('furniture-form').addEventListener('submit', handleFurnitureForm);
+            
+            // Modal de enlaces
+            document.getElementById('links-modal-close').addEventListener('click', hideLinksModal);
+            document.getElementById('links-form').addEventListener('submit', handleLinksForm);
+            
+            // Cerrar modales al hacer clic fuera
+            document.getElementById('login-modal').addEventListener('click', function(e) {
+                if (e.target === this) hideLoginModal();
             });
-            calendarContainer.appendChild(headerDiv);
-
-            // Crear grid de días
-            const calendarGrid = document.createElement('div');
-            calendarGrid.className = 'calendar';
-            calendarGrid.id = 'calendar-grid';
-            calendarContainer.appendChild(calendarGrid);
-
-            // Generar el mes actual
-            generateMonthCalendar();
-
-            // Agregar event listeners para navegación
-            document.getElementById('prev-month-btn').addEventListener('click', previousMonth);
-            document.getElementById('next-month-btn').addEventListener('click', nextMonth);
+            
+            document.getElementById('client-modal').addEventListener('click', function(e) {
+                if (e.target === this) hideClientModal();
+            });
+            
+            document.getElementById('furniture-modal').addEventListener('click', function(e) {
+                if (e.target === this) hideFurnitureModal();
+            });
+            
+            document.getElementById('links-modal').addEventListener('click', function(e) {
+                if (e.target === this) hideLinksModal();
+            });
         }
 
-        // Generar calendario para el mes actual
-        function generateMonthCalendar() {
-            const calendarGrid = document.getElementById('calendar-grid');
-            calendarGrid.innerHTML = '';
+        // =============================================
+        // FIREBASE - TIEMPO REAL
+        // =============================================
 
-            // Actualizar display del mes actual
-            document.getElementById('current-month-display').textContent = 
-                getMonthName(currentCalendarMonth) + ' ' + currentCalendarYear;
-
-            const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1);
-            const lastDay = new Date(currentCalendarYear, currentCalendarMonth + 1, 0);
-            const today = new Date();
-
-            // Días del mes anterior
-            const startingDay = firstDay.getDay();
-            const prevMonthLastDay = new Date(currentCalendarYear, currentCalendarMonth, 0).getDate();
+        function setupFirebaseListeners() {
+            // Escuchar cambios en las reservaciones
+            const reservationsRef = db.ref('reservations');
             
-            for (let i = startingDay - 1; i >= 0; i--) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day other-month';
-                dayElement.innerHTML = `
-                    <div class="day-number">${prevMonthLastDay - i}</div>
-                `;
-                calendarGrid.appendChild(dayElement);
-            }
+            reservationsRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                reservations = data ? Object.values(data) : [];
+                
+                console.log('📊 Reservaciones actualizadas:', reservations.length);
+                updateReservationCounters();
+                
+                // Actualizar interfaz
+                renderCalendar();
+                if (selectedDate) renderFurnitureGrid();
+                if (isAdminLoggedIn) renderAdminReservations();
+                
+                showSyncStatus('✅ Datos actualizados', 'success');
+            });
 
-            // Días del mes actual
-            for (let day = 1; day <= lastDay.getDate(); day++) {
-                const date = new Date(currentCalendarYear, currentCalendarMonth, day);
-                const dateString = date.toISOString().split('T')[0];
-                
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day available';
-                dayElement.setAttribute('data-date', dateString);
-                
-                // Verificar si hay reservaciones para esta fecha
-                const dateReservations = reservations.filter(r => r.date === dateString);
-                let status = dateReservations.length >= furnitureData.length ? 'reserved' : 'available';
-                let statusText = status === 'available' ? 'Disponible' : 'Reservado';
-                
-                dayElement.className = `calendar-day ${status}`;
-                
-                // Marcar si es hoy
-                if (date.toDateString() === today.toDateString()) {
-                    dayElement.classList.add('today');
+            // Escuchar cambios en las mesas
+            const furnitureRef = db.ref('furniture');
+            
+            furnitureRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    furniture = Object.values(data);
+                    console.log('🪑 Mesas actualizadas:', furniture.length);
+                } else {
+                    // Si no hay mesas en Firebase, cargar las iniciales
+                    loadInitialFurnitureData();
                 }
                 
-                // Marcar si está seleccionado
-                if (dateString === selectedDate) {
-                    dayElement.classList.add('selected');
+                updateFurnitureCounters();
+                
+                // Actualizar interfaz
+                if (selectedDate) renderFurnitureGrid();
+                if (isAdminLoggedIn) renderFurnitureManagement();
+            });
+
+            // Escuchar cambios en los enlaces
+            const linksRef = db.ref('links');
+            
+            linksRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    links = data;
+                    console.log('🔗 Enlaces actualizados:', links);
+                    updateLinksInUI();
+                } else {
+                    // Si no hay enlaces en Firebase, usar los por defecto
+                    links = {...DEFAULT_LINKS};
+                    updateLinksInUI();
                 }
                 
-                dayElement.innerHTML = `
-                    <div class="day-number">${day}</div>
-                    <div class="day-status">${statusText}</div>
-                `;
-                
-                // Agregar event listener para selección de fecha
-                dayElement.addEventListener('click', function() {
-                    if (!this.classList.contains('other-month') && !this.classList.contains('reserved')) {
-                        selectDate(dateString);
-                    }
+                if (isAdminLoggedIn) renderLinksManagement();
+            });
+
+            // Estado de conexión
+            const connectedRef = db.ref('.info/connected');
+            connectedRef.on('value', (snapshot) => {
+                if (snapshot.val() === true) {
+                    updateConnectionStatus('online', 'Conectado');
+                } else {
+                    updateConnectionStatus('offline', 'Desconectado');
+                }
+            });
+        }
+
+        function updateReservationCounters() {
+            const total = reservations.length;
+            const pending = reservations.filter(r => r.status === 'pending').length;
+            const confirmed = reservations.filter(r => r.status === 'confirmed').length;
+            const cancelled = reservations.filter(r => r.status === 'cancelled').length;
+            
+            document.getElementById('total-reservations').textContent = total;
+            document.getElementById('pending-reservations').textContent = pending;
+            document.getElementById('confirmed-reservations').textContent = confirmed;
+        }
+
+        function updateFurnitureCounters() {
+            document.getElementById('total-furniture').textContent = furniture.length;
+        }
+
+        function updateConnectionStatus(status, message) {
+            const element = document.getElementById('connection-status');
+            const text = document.getElementById('status-text');
+            const statusElement = document.getElementById('firebase-status');
+            
+            element.className = `connection-status ${status}`;
+            text.textContent = message;
+            
+            if (status === 'online') {
+                statusElement.textContent = 'Conectado';
+                statusElement.style.color = '#51cf66';
+            } else {
+                statusElement.textContent = 'Desconectado';
+                statusElement.style.color = '#ff6b6b';
+            }
+        }
+
+        function updateLinksInUI() {
+            document.getElementById('evento-link').href = links.evento;
+            document.getElementById('posicione-mueble-link').href = links.posicioneMueble;
+        }
+
+        async function saveReservationToFirebase(reservation) {
+            try {
+                const newReservationRef = db.ref('reservations').push();
+                await newReservationRef.set({
+                    ...reservation,
+                    firebaseId: newReservationRef.key,
+                    status: 'pending', // Estado por defecto: pendiente
+                    createdAt: new Date().toISOString()
                 });
+                return true;
+            } catch (error) {
+                console.error('Error guardando reservación:', error);
+                return false;
+            }
+        }
+
+        async function updateReservationStatus(reservationId, status) {
+            try {
+                const reservationsRef = db.ref('reservations');
+                const snapshot = await reservationsRef.once('value');
+                const reservations = snapshot.val();
                 
-                calendarGrid.appendChild(dayElement);
-            }
-
-            // Días del siguiente mes
-            const totalCells = 42; // 6 semanas
-            const remainingCells = totalCells - (startingDay + lastDay.getDate());
-            
-            for (let day = 1; day <= remainingCells; day++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day other-month';
-                dayElement.innerHTML = `
-                    <div class="day-number">${day}</div>
-                `;
-                calendarGrid.appendChild(dayElement);
-            }
-        }
-
-        // Obtener nombre del mes
-        function getMonthName(month) {
-            const months = [
-                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-            ];
-            return months[month];
-        }
-
-        // Navegación entre meses
-        function previousMonth() {
-            currentCalendarMonth--;
-            if (currentCalendarMonth < 0) {
-                currentCalendarMonth = 11;
-                currentCalendarYear--;
-            }
-            generateMonthCalendar();
-        }
-
-        function nextMonth() {
-            currentCalendarMonth++;
-            if (currentCalendarMonth > 11) {
-                currentCalendarMonth = 0;
-                currentCalendarYear++;
-            }
-            generateMonthCalendar();
-        }
-
-        // Cargar muebles
-        function loadFurniture() {
-            const furnitureContainer = document.getElementById('furniture-container');
-            furnitureContainer.innerHTML = '';
-
-            furnitureData.forEach(furniture => {
-                const furnitureCard = document.createElement('div');
-                furnitureCard.className = 'furniture-card';
-                furnitureCard.setAttribute('data-id', furniture.id);
-                
-                // Verificar si el mueble está reservado para la fecha seleccionada
-                const isReserved = selectedDate ? 
-                    reservations.some(r => r.date === selectedDate && r.furnitureId === furniture.id) : 
-                    false;
-                
-                if (isReserved) {
-                    furnitureCard.classList.add('disabled');
+                if (reservations) {
+                    for (const key in reservations) {
+                        if (reservations[key].id === reservationId) {
+                            await db.ref('reservations/' + key).update({
+                                status: status,
+                                updatedAt: new Date().toISOString(),
+                                updatedBy: 'admin'
+                            });
+                            return true;
+                        }
+                    }
                 }
+                return false;
+            } catch (error) {
+                console.error('Error actualizando reservación:', error);
+                return false;
+            }
+        }
+
+        async function saveLinksToFirebase(newLinks) {
+            try {
+                await db.ref('links').set(newLinks);
+                return true;
+            } catch (error) {
+                console.error('Error guardando enlaces:', error);
+                return false;
+            }
+        }
+
+        // =============================================
+        // GESTIÓN DE MESAS
+        // =============================================
+
+        function loadInitialFurnitureData() {
+            // Datos iniciales de mesas
+            const initialFurniture = [
+                { id: 1, name: "Mesa VIP 1", capacity: 6, price: 3000, icon: "crown" },
+                { id: 2, name: "Mesa VIP 2", capacity: 4, price: 2000, icon: "crown" },
+                { id: 3, name: "Mesa VIP 3", capacity: 4, price: 2500, icon: "chair" },
+                { id: 4, name: "Mesa VIP 4", capacity: 4, price: 1500, icon: "chair" },
+                { id: 5, name: "Mesa VIP 5", capacity: 8, price: 1000, icon: "users" },
+                { id: 6, name: "Mesa VIP 6", capacity: 2, price: 2000, icon: "user-friends" },
+                { id: 7, name: "Mesa VIP 7", capacity: 6, price: 2000, icon: "crown" },
+                { id: 8, name: "Mesa VIP 8", capacity: 4, price: 1000, icon: "crown" },
+                { id: 9, name: "Mesa VIP 9", capacity: 4, price: 1500, icon: "chair" },
+                { id: 10, name: "Mesa VIP 10", capacity: 4, price: 1200, icon: "chair" },
+                { id: 11, name: "Mesa VIP 11", capacity: 8, price: 1000, icon: "users" },
+                { id: 12, name: "Mesa VIP 12", capacity: 2, price: 2000, icon: "user-friends" },
+                { id: 13, name: "Mesa VIP 13", capacity: 6, price: 2000, icon: "crown" },
+                { id: 14, name: "Mesa VIP 14", capacity: 4, price: 1000, icon: "crown" },
+                { id: 15, name: "Mesa VIP 15", capacity: 4, price: 2000, icon: "chair" },
+                { id: 16, name: "Mesa VIP 16", capacity: 4, price: 1000, icon: "chair" },
+                { id: 17, name: "Mesa VIP 17", capacity: 8, price: 2000, icon: "users" },
+                { id: 18, name: "Mesa VIP 18", capacity: 2, price: 2000, icon: "user-friends" },
+                { id: 19, name: "Mesa VIP 19", capacity: 8, price: 1000, icon: "users" },
+                { id: 20, name: "Mesa VIP 20", capacity: 2, price: 2000, icon: "user-friends" },
+                { id: 21, name: "Mesa VIP 21", capacity: 6, price: 1500, icon: "crown" },
+                { id: 22, name: "Mesa VIP 22", capacity: 4, price: 2500, icon: "crown" },
+                { id: 23, name: "Mesa VIP 23", capacity: 4, price: 1000, icon: "chair" },
+                { id: 24, name: "Mesa VIP 24", capacity: 4, price: 1500, icon: "chair" },
+                { id: 25, name: "Mesa VIP 25", capacity: 8, price: 2500, icon: "users" },
+                { id: 26, name: "Mesa VIP 26", capacity: 2, price: 2000, icon: "user-friends" },
+                { id: 27, name: "Mesa VIP 27", capacity: 6, price: 5000, icon: "crown" },
+                { id: 28, name: "Mesa VIP 28", capacity: 4, price: 4000, icon: "crown" },
+                { id: 29, name: "Mesa VIP 29", capacity: 4, price: 3000, icon: "chair" },
+                { id: 30, name: "Mesa VIP 30", capacity: 4, price: 3000, icon: "chair" },
+                { id: 31, name: "Mesa VIP 31", capacity: 8, price: 2500, icon: "users" },
+                { id: 32, name: "Mesa VIP 32", capacity: 2, price: 2000, icon: "user-friends" },
+				{ id: 33, name: "Mesa VIP 33", capacity: 8, price: 1500, icon: "users" },
+                { id: 34, name: "Mesa VIP 34", capacity: 2, price: 2000, icon: "user-friends" },
+                { id: 35, name: "Mesa VIP 35", capacity: 6, price: 5000, icon: "crown" },
+                { id: 36, name: "Mesa VIP 36", capacity: 4, price: 4000, icon: "crown" },
+                { id: 37, name: "Mesa VIP 37", capacity: 4, price: 3000, icon: "chair" },
+                { id: 38, name: "Mesa VIP 38", capacity: 4, price: 3000, icon: "chair" },
+                { id: 39, name: "Mesa VIP 39", capacity: 8, price: 2500, icon: "users" },
+                { id: 40, name: "Mesa VIP 40", capacity: 2, price: 2000, icon: "user-friends" },
+                { id: 41, name: "Mesa VIP 41", capacity: 6, price: 1000, icon: "crown" },
+                { id: 42, name: "Mesa VIP 42", capacity: 4, price: 4000, icon: "crown" },
+                { id: 43, name: "Mesa VIP 43", capacity: 4, price: 3000, icon: "chair" },
+                { id: 44, name: "Mesa VIP 44", capacity: 4, price: 3000, icon: "chair" },
+                { id: 45, name: "Mesa VIP 45", capacity: 8, price: 2500, icon: "users" }
+            ];
+            
+            // Solo cargar datos iniciales si no hay mesas en Firebase
+            if (furniture.length === 0) {
+                furniture = initialFurniture;
                 
-                furnitureCard.innerHTML = `
-                    <img src="${furniture.image}" alt="${furniture.name}" class="furniture-image">
-                    <div class="furniture-name">${furniture.name}</div>
-                    <div class="furniture-details">${furniture.capacity}</div>
-                    <div class="furniture-details">${furniture.price}</div>
-                    <div class="furniture-status ${isReserved ? 'status-reserved' : 'status-available'}">
-                        ${isReserved ? 'Reservado' : 'Disponible'}
-                    </div>
-                `;
-                
-                // Agregar event listener para selección de mueble
-                if (!isReserved) {
-                    furnitureCard.addEventListener('click', function() {
-                        selectFurniture(furniture.id);
+                // Guardar en Firebase si está disponible
+                if (db) {
+                    const furnitureRef = db.ref('furniture');
+                    furnitureRef.remove().then(() => {
+                        initialFurniture.forEach(item => {
+                            furnitureRef.push().set(item);
+                        });
                     });
                 }
-                
-                furnitureContainer.appendChild(furnitureCard);
-            });
+            }
         }
 
-        // Seleccionar fecha
-        function selectDate(date) {
-            selectedDate = date;
-            selectedFurniture = null; // Resetear selección de mueble
-            
-            // Actualizar calendario
-            const allDays = document.querySelectorAll('#calendar-grid .calendar-day');
-            allDays.forEach(day => {
-                day.classList.remove('selected');
-                if (day.getAttribute('data-date') === date) {
-                    day.classList.add('selected');
-                }
-            });
-            
-            // Recargar muebles para mostrar disponibilidad en la fecha seleccionada
-            loadFurniture();
-            
-            // Ocultar resumen hasta que se seleccione un mueble
-            document.getElementById('reservation-summary').style.display = 'none';
+        function showAddFurnitureModal() {
+            document.getElementById('furniture-modal-title').textContent = 'Agregar Nueva Mesa';
+            document.getElementById('furniture-form').reset();
+            document.getElementById('furniture-edit-id').value = '';
+            document.getElementById('furniture-modal').style.display = 'flex';
         }
 
-        // Seleccionar mueble
-        function selectFurniture(furnitureId) {
-            if (!selectedDate) {
-                alert('Por favor, selecciona una fecha primero.');
+        function showEditFurnitureModal(furnitureItem) {
+            document.getElementById('furniture-modal-title').textContent = 'Editar Mesa';
+            document.getElementById('furniture-edit-id').value = furnitureItem.id;
+            document.getElementById('furniture-name').value = furnitureItem.name;
+            document.getElementById('furniture-capacity').value = furnitureItem.capacity;
+            document.getElementById('furniture-price').value = furnitureItem.price;
+            document.getElementById('furniture-icon').value = furnitureItem.icon;
+            document.getElementById('furniture-modal').style.display = 'flex';
+        }
+
+        function hideFurnitureModal() {
+            document.getElementById('furniture-modal').style.display = 'none';
+            document.getElementById('furniture-form').reset();
+        }
+
+        async function handleFurnitureForm(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('furniture-name').value.trim();
+            const capacity = parseInt(document.getElementById('furniture-capacity').value);
+            const price = parseInt(document.getElementById('furniture-price').value);
+            const icon = document.getElementById('furniture-icon').value;
+            const editId = document.getElementById('furniture-edit-id').value;
+            
+            if (!name || !capacity || !price || !icon) {
+                alert('Por favor, completa todos los campos');
                 return;
             }
             
-            selectedFurniture = furnitureId;
+            const furnitureItem = {
+                name: name,
+                capacity: capacity,
+                price: price,
+                icon: icon
+            };
             
-            // Actualizar tarjetas de muebles
-            const allFurniture = document.querySelectorAll('.furniture-card');
-            allFurniture.forEach(card => {
-                card.classList.remove('selected');
-                if (parseInt(card.getAttribute('data-id')) === furnitureId) {
-                    card.classList.add('selected');
-                }
-            });
+            if (editId) {
+                // Editar mesa existente
+                furnitureItem.id = parseInt(editId);
+                await updateFurnitureInFirebase(furnitureItem);
+            } else {
+                // Agregar nueva mesa
+                furnitureItem.id = Date.now();
+                await saveFurnitureToFirebase(furnitureItem);
+            }
             
-            // Actualizar resumen
-            updateReservationSummary();
+            hideFurnitureModal();
         }
 
-        // Actualizar resumen de reserva
-        function updateReservationSummary() {
-            const summaryElement = document.getElementById('reservation-summary');
-            
-            if (selectedDate && selectedFurniture) {
-                const furniture = furnitureData.find(f => f.id === selectedFurniture);
-                const dateObj = new Date(selectedDate);
-                const formattedDate = dateObj.toLocaleDateString('es-ES', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: 'numeric'
-                });
-                
-                document.getElementById('summary-date').textContent = formattedDate;
-                document.getElementById('summary-furniture').textContent = furniture.name;
-                document.getElementById('summary-capacity').textContent = furniture.capacity;
-                document.getElementById('summary-price').textContent = furniture.price;
-                document.getElementById('summary-total').textContent = furniture.price;
-                
-                summaryElement.style.display = 'block';
-            } else {
-                summaryElement.style.display = 'none';
+        async function saveFurnitureToFirebase(furnitureItem) {
+            try {
+                await db.ref('furniture').push().set(furnitureItem);
+                showSyncStatus('✅ Mesa agregada correctamente', 'success');
+                return true;
+            } catch (error) {
+                console.error('Error guardando mesa:', error);
+                showSyncStatus('❌ Error al guardar mesa', 'error');
+                return false;
             }
         }
 
-        // Configurar event listeners
-        function setupEventListeners() {
-            // Botón de confirmación de reserva
-            document.getElementById('confirm-reservation-btn').addEventListener('click', function() {
-                if (selectedDate && selectedFurniture) {
-                    confirmReservation();
-                } else {
-                    alert('Por favor, selecciona una fecha y un mueble para continuar.');
+        async function updateFurnitureInFirebase(furnitureItem) {
+            try {
+                const furnitureRef = db.ref('furniture');
+                const snapshot = await furnitureRef.once('value');
+                const furnitureData = snapshot.val();
+                
+                if (furnitureData) {
+                    for (const key in furnitureData) {
+                        if (furnitureData[key].id === furnitureItem.id) {
+                            await db.ref('furniture/' + key).update(furnitureItem);
+                            showSyncStatus('✅ Mesa actualizada correctamente', 'success');
+                            return true;
+                        }
+                    }
                 }
-            });
-            
-            // Botón de cancelar reserva
-            document.getElementById('reset-reservation-btn').addEventListener('click', function() {
-                resetReservation();
-            });
-            
-            // Enlace al panel administrativo
-            document.getElementById('admin-login-link').addEventListener('click', function(e) {
-                e.preventDefault();
-                showAdminLogin();
-            });
-            
-            // Botón de cerrar sesión
-            document.getElementById('logout-btn').addEventListener('click', function() {
-                hideAdminPanel();
-            });
+                return false;
+            } catch (error) {
+                console.error('Error actualizando mesa:', error);
+                showSyncStatus('❌ Error al actualizar mesa', 'error');
+                return false;
+            }
+        }
 
-            // Botones del modal de WhatsApp
-            document.getElementById('send-whatsapp-btn').addEventListener('click', sendWhatsAppMessage);
-            document.getElementById('cancel-whatsapp-btn').addEventListener('click', function() {
-                document.getElementById('whatsapp-modal').style.display = 'none';
-            });
+        async function deleteFurnitureFromFirebase(furnitureId) {
+            if (!confirm('¿Estás seguro de que quieres eliminar esta mesa?')) return;
 
-            // Formulario para agregar reservación manual
-            document.getElementById('add-reservation-form').addEventListener('submit', function(e) {
-                e.preventDefault();
-                addManualReservation();
+            try {
+                const furnitureRef = db.ref('furniture');
+                const snapshot = await furnitureRef.once('value');
+                const furnitureData = snapshot.val();
+                
+                if (furnitureData) {
+                    for (const key in furnitureData) {
+                        if (furnitureData[key].id === furnitureId) {
+                            await db.ref('furniture/' + key).remove();
+                            showSyncStatus('✅ Mesa eliminada correctamente', 'success');
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            } catch (error) {
+                console.error('Error eliminando mesa:', error);
+                showSyncStatus('❌ Error al eliminar mesa', 'error');
+                return false;
+            }
+        }
+
+        function renderFurnitureManagement() {
+            const container = document.getElementById('furniture-management-grid');
+            
+            if (furniture.length === 0) {
+                container.innerHTML = '<p>No hay mesas configuradas</p>';
+                return;
+            }
+            
+            let html = '';
+            furniture.forEach(item => {
+                html += `
+                    <div class="furniture-management-card">
+                        <i class="fas fa-${item.icon} furniture-icon"></i>
+                        <div class="furniture-name">${item.name}</div>
+                        <div class="furniture-details">
+                            <div>Capacidad: ${item.capacity} personas</div>
+                            <div>Precio: $${item.price}</div>
+                        </div>
+                        <div class="furniture-management-actions">
+                            <button class="btn btn-warning btn-small" onclick="showEditFurnitureModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                            <button class="btn btn-danger btn-small" onclick="deleteFurnitureFromFirebase(${item.id})">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // =============================================
+        // GESTIÓN DE ENLACES
+        // =============================================
+
+        function showLinksModal() {
+            document.getElementById('link-evento').value = links.evento;
+            document.getElementById('link-posicione-mueble').value = links.posicioneMueble;
+            document.getElementById('links-modal').style.display = 'flex';
+        }
+
+        function hideLinksModal() {
+            document.getElementById('links-modal').style.display = 'none';
+            document.getElementById('links-form').reset();
+        }
+
+        async function handleLinksForm(e) {
+            e.preventDefault();
+            
+            const evento = document.getElementById('link-evento').value.trim();
+            const posicioneMueble = document.getElementById('link-posicione-mueble').value.trim();
+            
+            if (!evento || !posicioneMueble) {
+                alert('Por favor, completa todos los campos');
+                return;
+            }
+            
+            const newLinks = {
+                evento: evento,
+                posicioneMueble: posicioneMueble
+            };
+            
+            showSyncStatus('Guardando enlaces...', 'loading');
+            
+            const success = await saveLinksToFirebase(newLinks);
+            
+            if (success) {
+                links = newLinks;
+                updateLinksInUI();
+                showSyncStatus('✅ Enlaces actualizados correctamente', 'success');
+                hideLinksModal();
+            } else {
+                showSyncStatus('❌ Error al guardar enlaces', 'error');
+            }
+        }
+
+        function renderLinksManagement() {
+            const container = document.getElementById('links-list-container');
+            
+            let html = '';
+            html += `
+                <div class="link-item">
+                    <div class="link-info">
+                        <div class="link-name">Enlace de Evento</div>
+                        <div class="link-url">${links.evento}</div>
+                    </div>
+                </div>
+                <div class="link-item">
+                    <div class="link-info">
+                        <div class="link-name">Enlace de Posición de Muebles</div>
+                        <div class="link-url">${links.posicioneMueble}</div>
+                    </div>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+        }
+
+        // =============================================
+        // FUNCIONES PRINCIPALES DE LA APLICACIÓN
+        // =============================================
+
+        function renderCalendar() {
+            const container = document.getElementById('calendar-container');
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            let html = '<div class="calendar"><div class="calendar-header">';
+            ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].forEach(day => {
+                html += `<div>${day}</div>`;
+            });
+            html += '</div>';
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="calendar-day disabled"></div>';
+            }
+            
+            for (let day = 1; day <= lastDate; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dateObj = new Date(currentYear, currentMonth, day);
+                const isPast = dateObj < new Date(new Date().setHours(0,0,0,0));
+                const isSelected = selectedDate === dateStr;
+                const dayReservations = reservations.filter(r => r.date === dateStr);
+                const confirmedReservations = dayReservations.filter(r => r.status === 'confirmed');
+                const pendingReservations = dayReservations.filter(r => r.status === 'pending');
+                
+                let dayClass = 'calendar-day';
+                if (isPast) dayClass += ' disabled';
+                if (isSelected) dayClass += ' selected';
+                if (confirmedReservations.length > 0) dayClass += ' has-reservations';
+                if (pendingReservations.length > 0) dayClass += ' has-pending';
+                
+                html += `<div class="${dayClass}" data-date="${dateStr}">${day}`;
+                if (confirmedReservations.length > 0) {
+                    html += `<div class="reservation-count">${confirmedReservations.length}</div>`;
+                }
+                if (pendingReservations.length > 0 && confirmedReservations.length === 0) {
+                    html += `<div class="reservation-count pending-count">${pendingReservations.length}</div>`;
+                }
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+            
+            document.querySelectorAll('.calendar-day:not(.disabled)').forEach(day => {
+                day.addEventListener('click', function() {
+                    selectDate(this.dataset.date);
+                });
             });
         }
 
-        // Confirmar reserva
-        function confirmReservation() {
-            const furniture = furnitureData.find(f => f.id === selectedFurniture);
+        function renderFurnitureGrid() {
+            const container = document.getElementById('furniture-grid');
             
-            // Verificar si ya está reservado
-            const existingReservation = reservations.find(r => 
-                r.date === selectedDate && r.furnitureId === selectedFurniture
+            if (!selectedDate) {
+                container.innerHTML = '<p>Selecciona una fecha primero</p>';
+                return;
+            }
+            
+            const confirmedReservations = reservations.filter(r => 
+                r.date === selectedDate && r.status === 'confirmed'
+            );
+            const pendingReservations = reservations.filter(r => 
+                r.date === selectedDate && r.status === 'pending'
             );
             
-            if (existingReservation) {
-                alert('Lo sentimos, esta mesa ya ha sido reservada para la fecha seleccionada.');
+            const reservedFurnitureIds = confirmedReservations.map(r => r.furnitureId);
+            const pendingFurnitureIds = pendingReservations.map(r => r.furnitureId);
+            
+            let html = '';
+            furniture.forEach(item => {
+                const isReserved = reservedFurnitureIds.includes(item.id);
+                const isPending = pendingFurnitureIds.includes(item.id);
+                const isSelected = selectedFurniture === item.id;
+                
+                let cardClass = 'furniture-card';
+                if (isReserved) {
+                    cardClass += ' reserved';
+                } else if (isPending) {
+                    cardClass += ' pending';
+                } else {
+                    cardClass += ' available';
+                }
+                if (isSelected) cardClass += ' selected';
+                
+                let statusText, statusClass, iconColor;
+                if (isReserved) {
+                    statusText = 'CONFIRMADA';
+                    statusClass = 'status-reserved';
+                    iconColor = '#ff6b6b';
+                } else if (isPending) {
+                    statusText = 'PENDIENTE';
+                    statusClass = 'status-pending';
+                    iconColor = '#fcc419';
+                } else {
+                    statusText = 'DISPONIBLE';
+                    statusClass = 'status-available';
+                    iconColor = '#8a2be2';
+                }
+                
+                html += `
+                    <div class="${cardClass}" data-id="${item.id}">
+                        <i class="fas fa-${item.icon} furniture-icon" style="color: ${iconColor}"></i>
+                        <div class="furniture-name">${item.name}</div>
+                        <div class="furniture-details">
+                            <div>Capacidad: ${item.capacity} personas</div>
+                            <div>Precio: $${item.price}</div>
+                            <div class="status-badge ${statusClass}">${statusText}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            
+            document.querySelectorAll('.furniture-card.available').forEach(card => {
+                card.addEventListener('click', function() {
+                    selectFurniture(parseInt(this.dataset.id));
+                });
+            });
+        }
+
+        function showClientModal() {
+            if (!selectedDate || !selectedFurniture) {
+                alert('Por favor, selecciona una fecha y una mesa');
                 return;
             }
             
-            // Agregar reserva
-            const newReservation = {
+            // Verificar disponibilidad
+            const confirmedReservations = reservations.filter(r => 
+                r.date === selectedDate && r.status === 'confirmed'
+            );
+            const reservedFurnitureIds = confirmedReservations.map(r => r.furnitureId);
+            
+            if (reservedFurnitureIds.includes(selectedFurniture)) {
+                alert('❌ Esta mesa ya fue reservada. Por favor, selecciona otra mesa.');
+                renderFurnitureGrid();
+                return;
+            }
+            
+            document.getElementById('client-modal').style.display = 'flex';
+        }
+
+        function hideClientModal() {
+            document.getElementById('client-modal').style.display = 'none';
+            document.getElementById('client-form').reset();
+        }
+
+        async function handleClientReservation(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('client-name').value.trim();
+            const lastname = document.getElementById('client-lastname').value.trim();
+            const whatsapp = document.getElementById('client-whatsapp').value.trim();
+            const notes = document.getElementById('client-notes').value.trim();
+            
+            if (!name || !lastname || !whatsapp) {
+                alert('Por favor, completa todos los campos obligatorios');
+                return;
+            }
+            
+            const furnitureItem = furniture.find(f => f.id === selectedFurniture);
+            const reservation = {
                 id: Date.now(),
                 date: selectedDate,
                 furnitureId: selectedFurniture,
-                furnitureName: furniture.name,
-                price: furniture.price,
+                furnitureName: furnitureItem.name,
+                capacity: furnitureItem.capacity,
+                price: furnitureItem.price,
+                client: {
+                    name: name,
+                    lastname: lastname,
+                    whatsapp: whatsapp,
+                    notes: notes
+                },
                 timestamp: new Date().toISOString(),
-                source: 'client'
+                status: 'pending'
             };
             
-            reservations.push(newReservation);
+            showSyncStatus('Enviando solicitud...', 'loading');
             
-            // Guardar en localStorage
-            localStorage.setItem('mouk_reservations', JSON.stringify(reservations));
+            const success = await saveReservationToFirebase(reservation);
             
-            // Mostrar confirmación
-            alert(`¡Reserva confirmada!\n\nFecha: ${document.getElementById('summary-date').textContent}\nMesa: ${furniture.name}\nTotal: ${furniture.price}`);
-            
-            // Resetear selección
-            resetReservation();
-            
-            // Actualizar interfaz
-            loadFurniture();
-            generateMonthCalendar();
-            
-            // Actualizar panel administrativo si está visible
-            if (document.getElementById('admin-panel').style.display === 'block') {
-                updateReservationsList();
-                initializeAdminCalendar();
-                updateFurnitureSelect();
+            if (success) {
+                // Enviar notificaciones por WhatsApp
+                sendWhatsAppNotifications(reservation);
+                
+                alert('✅ Solicitud enviada correctamente\n\nTe contactaremos por WhatsApp para confirmar tu reserva y enviarte los detalles de pago.');
+                hideClientModal();
+                resetSelection();
+            } else {
+                alert('❌ Error al enviar la solicitud. Intenta nuevamente.');
             }
         }
 
-        // Resetear reserva
-        function resetReservation() {
+        function sendWhatsAppNotifications(reservation) {
+            const dateObj = new Date(reservation.date + 'T12:00:00'); // FIX: Agregar hora para evitar problemas de zona horaria
+            const formattedDate = dateObj.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Mensaje para el cliente
+            const clientMessage = `¡Hola ${reservation.client.name}! Gracias por tu solicitud de reservación en Le Mouk Club.
+
+📅 Fecha: ${formattedDate}
+🪑 Mesa: ${reservation.furnitureName}
+👥 Capacidad: ${reservation.capacity} personas
+💰 Precio: $${reservation.price}
+
+Para confirmar tu reserva, realiza el pago a:
+🏦 Banco: ${WHATSAPP_CONFIG.bankInfo.name}
+📝 Cuenta: ${WHATSAPP_CONFIG.bankInfo.account}
+👤 Titular: ${WHATSAPP_CONFIG.bankInfo.holder}
+
+Una vez realizado el pago, envíanos el comprobante por este mismo medio.
+
+¡Esperamos verte pronto en Le Mouk Club! 🎉`;
+
+            // Mensaje para la compañía
+            const companyMessage = `📋 NUEVA SOLICITUD DE RESERVACIÓN
+
+👤 Cliente: ${reservation.client.name} ${reservation.client.lastname}
+📞 WhatsApp: ${reservation.client.whatsapp}
+📅 Fecha: ${formattedDate}
+🪑 Mesa: ${reservation.furnitureName}
+💰 Precio: $${reservation.price}
+${reservation.client.notes ? `📝 Notas: ${reservation.client.notes}` : ''}
+
+ID de reservación: ${reservation.id}`;
+
+            // Abrir WhatsApp para el cliente
+            const clientWhatsAppUrl = `https://wa.me/${reservation.client.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(clientMessage)}`;
+            window.open(clientWhatsAppUrl, '_blank');
+            
+            // Abrir WhatsApp para la compañía
+            const companyWhatsAppUrl = `https://wa.me/${WHATSAPP_CONFIG.companyNumber}?text=${encodeURIComponent(companyMessage)}`;
+            window.open(companyWhatsAppUrl, '_blank');
+        }
+
+        function resetSelection() {
             selectedDate = null;
             selectedFurniture = null;
-            
-            // Actualizar calendario
-            const allDays = document.querySelectorAll('#calendar-grid .calendar-day');
-            allDays.forEach(day => {
-                day.classList.remove('selected');
-            });
-            
-            // Actualizar muebles
-            const allFurniture = document.querySelectorAll('.furniture-card');
-            allFurniture.forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // Recargar muebles para quitar estado "disabled"
-            loadFurniture();
-            
-            // Ocultar resumen
+            document.getElementById('selected-date-indicator').style.display = 'none';
+            document.getElementById('furniture-container').style.display = 'none';
             document.getElementById('reservation-summary').style.display = 'none';
+            renderCalendar();
         }
 
-        // Mostrar panel de administración
-        function showAdminLogin() {
-            const password = prompt('Ingrese la contraseña de administrador:');
+        // =============================================
+        // SISTEMA DE LOGIN ADMIN
+        // =============================================
+
+        function showLoginModal() {
+            document.getElementById('login-modal').style.display = 'flex';
+        }
+
+        function hideLoginModal() {
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('admin-login-form').reset();
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
             
-            // Contraseña simple para demostración
-            if (password === 'admin123') {
-                document.getElementById('admin-panel').style.display = 'block';
-                document.querySelector('.reservation-section').style.display = 'none';
-                document.querySelector('.hero').style.display = 'none';
-                document.querySelector('footer').style.display = 'none';
-                
-                // Inicializar panel administrativo
-                initializeAdminPanel();
+            const username = document.getElementById('admin-username').value.trim();
+            const password = document.getElementById('admin-password').value.trim();
+            
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                isAdminLoggedIn = true;
+                hideLoginModal();
+                showAdminPanel();
+                showSyncStatus('✅ Sesión administrativa iniciada', 'success');
             } else {
-                alert('Contraseña incorrecta.');
+                alert('❌ Credenciales incorrectas');
+                document.getElementById('admin-password').value = '';
             }
         }
 
-        // Ocultar panel de administración
+        function showAdminPanel() {
+            document.getElementById('reservations').style.display = 'none';
+            document.getElementById('admin-panel').style.display = 'block';
+            renderAdminCalendar();
+            renderAdminReservations();
+            renderFurnitureManagement();
+            renderLinksManagement();
+        }
+
         function hideAdminPanel() {
             document.getElementById('admin-panel').style.display = 'none';
-            document.querySelector('.reservation-section').style.display = 'block';
-            document.querySelector('.hero').style.display = 'block';
-            document.querySelector('footer').style.display = 'block';
+            document.getElementById('reservations').style.display = 'block';
         }
 
-        // Inicializar panel administrativo
-        function initializeAdminPanel() {
-            updateReservationsList();
-            initializeAdminCalendar();
-            updateFurnitureSelect();
+        // =============================================
+        // FUNCIONES AUXILIARES
+        // =============================================
+
+        function selectDate(date) {
+            selectedDate = date;
+            const dateObj = new Date(date + 'T12:00:00'); // FIX: Agregar hora para evitar problemas de zona horaria
+            document.getElementById('selected-date-text').textContent = 
+                dateObj.toLocaleDateString('es-ES', { 
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
+                });
+            document.getElementById('selected-date-indicator').style.display = 'flex';
+            renderCalendar();
+            document.getElementById('furniture-container').style.display = 'block';
+            renderFurnitureGrid();
+            updateReservationSummary();
             
-            // Establecer fecha mínima como hoy
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('reservation-date').min = today;
+            // Scroll automático a las mesas
+            setTimeout(() => {
+                document.getElementById('furniture-container').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }, 300);
         }
 
-        // Actualizar lista de reservaciones en el panel administrativo
-        function updateReservationsList() {
-            const reservationsList = document.getElementById('reservations-list');
-            reservationsList.innerHTML = '';
+        function selectFurniture(furnitureId) {
+            selectedFurniture = furnitureId;
+            renderFurnitureGrid();
+            document.getElementById('reservation-summary').style.display = 'block';
+            updateReservationSummary();
+            
+            // Scroll automático al resumen
+            setTimeout(() => {
+                document.getElementById('reservation-summary').scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }, 300);
+        }
 
+        function updateReservationSummary() {
+            if (!selectedDate || !selectedFurniture) return;
+            
+            const dateObj = new Date(selectedDate + 'T12:00:00'); // FIX: Agregar hora para evitar problemas de zona horaria
+            const furnitureItem = furniture.find(f => f.id === selectedFurniture);
+            
+            document.getElementById('summary-date').textContent = dateObj.toLocaleDateString('es-ES');
+            document.getElementById('summary-furniture').textContent = furnitureItem.name;
+            document.getElementById('summary-capacity').textContent = `${furnitureItem.capacity} personas`;
+            document.getElementById('summary-price').textContent = `$${furnitureItem.price}`;
+            document.getElementById('summary-total').textContent = `$${furnitureItem.price}`;
+        }
+
+        function renderAdminReservations() {
+            const container = document.getElementById('reservations-list-container');
+            
             if (reservations.length === 0) {
-                reservationsList.innerHTML = `
-                    <div class="no-reservations">
-                        <i class="fas fa-calendar-times" style="font-size: 48px; margin-bottom: 15px;"></i>
-                        <h3>No hay reservaciones</h3>
-                        <p>No se han realizado reservaciones aún.</p>
-                    </div>
-                `;
+                container.innerHTML = '<p>No hay reservaciones activas</p>';
                 return;
             }
-
-            // Ordenar reservaciones por fecha (más recientes primero)
+            
             const sortedReservations = [...reservations].sort((a, b) => 
-                new Date(b.timestamp) - new Date(a.timestamp)
+                new Date(b.createdAt || b.timestamp) - new Date(a.createdAt || a.timestamp)
             );
-
+            
+            let html = '';
             sortedReservations.forEach(reservation => {
-                const reservationElement = document.createElement('div');
-                reservationElement.className = 'reservation-item';
+                // FIX: Corregir problema de fecha - agregar hora para evitar problemas de zona horaria
+                const dateObj = new Date(reservation.date + 'T12:00:00');
+                const timeObj = new Date(reservation.createdAt || reservation.timestamp);
                 
-                const dateObj = new Date(reservation.date);
-                const formattedDate = dateObj.toLocaleDateString('es-ES', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                });
-
-                reservationElement.innerHTML = `
-                    <div class="reservation-header">
-                        <div class="reservation-id">Reserva #${reservation.id}</div>
-                        <div class="reservation-date">${formattedDate}</div>
-                    </div>
-                    <div class="reservation-details">
-                        <div class="reservation-detail">
-                            <strong>Mesa:</strong> ${reservation.furnitureName}
-                        </div>
-                        <div class="reservation-detail">
-                            <strong>Precio:</strong> ${reservation.price}
-                        </div>
-                        <div class="reservation-detail">
-                            <strong>Cliente:</strong> ${reservation.clientName || 'No especificado'}
-                        </div>
-                        <div class="reservation-detail">
-                            <strong>Teléfono:</strong> ${reservation.clientPhone || 'No especificado'}
-                        </div>
-                    </div>
-                    <div class="reservation-actions">
-                        ${reservation.clientPhone ? `
-                            <button class="btn-whatsapp" onclick="openWhatsAppModal(${reservation.id})">
-                                <i class="fab fa-whatsapp"></i> Contactar
-                            </button>
-                        ` : ''}
-                        <button class="btn-danger" onclick="deleteReservation(${reservation.id})">
-                            <i class="fas fa-trash"></i> Eliminar
-                        </button>
-                    </div>
-                `;
-                
-                reservationsList.appendChild(reservationElement);
-            });
-        }
-
-        // Inicializar calendario administrativo
-        function initializeAdminCalendar() {
-            const adminCalendarContainer = document.getElementById('admin-calendar-container');
-            adminCalendarContainer.innerHTML = '';
-
-            // Crear navegación del calendario
-            const navigationDiv = document.createElement('div');
-            navigationDiv.className = 'calendar-navigation';
-            navigationDiv.innerHTML = `
-                <button class="calendar-nav-btn" id="admin-prev-month-btn">
-                    <i class="fas fa-chevron-left"></i> Mes Anterior
-                </button>
-                <div class="current-month" id="admin-current-month-display"></div>
-                <button class="calendar-nav-btn" id="admin-next-month-btn">
-                    Mes Siguiente <i class="fas fa-chevron-right"></i>
-                </button>
-            `;
-            adminCalendarContainer.appendChild(navigationDiv);
-
-            // Crear encabezados de días de la semana
-            const headerDiv = document.createElement('div');
-            headerDiv.className = 'calendar-header';
-            const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-            daysOfWeek.forEach(day => {
-                const dayHeader = document.createElement('div');
-                dayHeader.className = 'calendar-header-day';
-                dayHeader.textContent = day;
-                headerDiv.appendChild(dayHeader);
-            });
-            adminCalendarContainer.appendChild(headerDiv);
-
-            // Crear grid de días
-            const calendarGrid = document.createElement('div');
-            calendarGrid.className = 'calendar';
-            calendarGrid.id = 'admin-calendar-grid';
-            adminCalendarContainer.appendChild(calendarGrid);
-
-            // Generar el mes actual
-            generateAdminMonthCalendar();
-
-            // Agregar event listeners para navegación
-            document.getElementById('admin-prev-month-btn').addEventListener('click', adminPreviousMonth);
-            document.getElementById('admin-next-month-btn').addEventListener('click', adminNextMonth);
-        }
-
-        // Generar calendario administrativo para el mes actual
-        function generateAdminMonthCalendar() {
-            const calendarGrid = document.getElementById('admin-calendar-grid');
-            calendarGrid.innerHTML = '';
-
-            // Actualizar display del mes actual
-            document.getElementById('admin-current-month-display').textContent = 
-                getMonthName(currentCalendarMonth) + ' ' + currentCalendarYear;
-
-            const firstDay = new Date(currentCalendarYear, currentCalendarMonth, 1);
-            const lastDay = new Date(currentCalendarYear, currentCalendarMonth + 1, 0);
-            const today = new Date();
-
-            // Días del mes anterior
-            const startingDay = firstDay.getDay();
-            const prevMonthLastDay = new Date(currentCalendarYear, currentCalendarMonth, 0).getDate();
-            
-            for (let i = startingDay - 1; i >= 0; i--) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day other-month';
-                dayElement.innerHTML = `
-                    <div class="day-number">${prevMonthLastDay - i}</div>
-                `;
-                calendarGrid.appendChild(dayElement);
-            }
-
-            // Días del mes actual
-            for (let day = 1; day <= lastDay.getDate(); day++) {
-                const date = new Date(currentCalendarYear, currentCalendarMonth, day);
-                const dateString = date.toISOString().split('T')[0];
-                
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day available';
-                dayElement.setAttribute('data-date', dateString);
-                
-                // Verificar si hay reservaciones para esta fecha
-                const dateReservations = reservations.filter(r => r.date === dateString);
-                let status = dateReservations.length > 0 ? 'reserved' : 'available';
-                let statusText = status === 'available' ? 'Disponible' : `${dateReservations.length} reserva(s)`;
-                
-                dayElement.className = `calendar-day ${status}`;
-                
-                // Marcar si es hoy
-                if (date.toDateString() === today.toDateString()) {
-                    dayElement.classList.add('today');
+                let statusClass, statusText;
+                switch(reservation.status) {
+                    case 'confirmed':
+                        statusClass = 'status-confirmed-badge';
+                        statusText = 'CONFIRMADA';
+                        break;
+                    case 'cancelled':
+                        statusClass = 'status-cancelled-badge';
+                        statusText = 'CANCELADA';
+                        break;
+                    default:
+                        statusClass = 'status-pending-badge';
+                        statusText = 'PENDIENTE';
                 }
                 
-                dayElement.innerHTML = `
-                    <div class="day-number">${day}</div>
-                    <div class="day-status">${statusText}</div>
+                html += `
+                    <div class="reservation-item ${reservation.status}">
+                        <div class="reservation-info">
+                            <div class="reservation-date">${dateObj.toLocaleDateString('es-ES')}</div>
+                            <div class="reservation-details">
+                                ${reservation.furnitureName} - ${reservation.capacity} personas - $${reservation.price}
+                            </div>
+                            <div class="reservation-client">
+                                <strong>Cliente:</strong> ${reservation.client.name} ${reservation.client.lastname}
+                            </div>
+                            <div class="reservation-client">
+                                <strong>WhatsApp:</strong> ${reservation.client.whatsapp}
+                            </div>
+                            ${reservation.client.notes ? `
+                                <div class="reservation-client">
+                                    <strong>Notas:</strong> ${reservation.client.notes}
+                                </div>
+                            ` : ''}
+                            <div class="reservation-time">
+                                Solicitado el ${timeObj.toLocaleDateString('es-ES')} a las ${timeObj.toLocaleTimeString('es-ES')}
+                            </div>
+                            <div class="reservation-status ${statusClass}">${statusText}</div>
+                        </div>
+                        <div class="reservation-actions">
+                            ${reservation.status === 'pending' ? `
+                                <button class="btn btn-success btn-small" onclick="confirmReservation(${reservation.id})">
+                                    <i class="fas fa-check"></i> Confirmar
+                                </button>
+                                <button class="btn btn-danger btn-small" onclick="cancelReservation(${reservation.id})">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                                <button class="btn btn-secondary btn-small" onclick="sendPaymentReminder(${reservation.id})">
+                                    <i class="fab fa-whatsapp"></i> Recordatorio
+                                </button>
+                            ` : ''}
+                            ${reservation.status === 'confirmed' ? `
+                                <button class="btn btn-danger btn-small" onclick="cancelReservation(${reservation.id})">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                            ` : ''}
+                            ${reservation.status === 'cancelled' ? `
+                                <button class="btn btn-success btn-small" onclick="confirmReservation(${reservation.id})">
+                                    <i class="fas fa-check"></i> Reactivar
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
                 `;
-                
-                // Agregar event listener para mostrar detalles de reservas
-                if (dateReservations.length > 0) {
-                    dayElement.style.cursor = 'pointer';
-                    dayElement.title = `Click para ver ${dateReservations.length} reserva(s)`;
-                    dayElement.addEventListener('click', function() {
-                        showReservationsForDate(dateString);
-                    });
-                }
-                
-                calendarGrid.appendChild(dayElement);
-            }
-
-            // Días del siguiente mes
-            const totalCells = 42;
-            const remainingCells = totalCells - (startingDay + lastDay.getDate());
+            });
             
-            for (let day = 1; day <= remainingCells; day++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day other-month';
-                dayElement.innerHTML = `
-                    <div class="day-number">${day}</div>
-                `;
-                calendarGrid.appendChild(dayElement);
+            container.innerHTML = html;
+        }
+
+        async function confirmReservation(reservationId) {
+            showSyncStatus('Confirmando reservación...', 'loading');
+            const success = await updateReservationStatus(reservationId, 'confirmed');
+            
+            if (success) {
+                showSyncStatus('✅ Reservación confirmada', 'success');
+                
+                // Enviar confirmación por WhatsApp
+                const reservation = reservations.find(r => r.id === reservationId);
+                if (reservation) {
+                    sendConfirmationMessage(reservation);
+                }
+            } else {
+                showSyncStatus('❌ Error al confirmar', 'error');
             }
         }
 
-        // Navegación entre meses en el panel administrativo
-        function adminPreviousMonth() {
-            currentCalendarMonth--;
-            if (currentCalendarMonth < 0) {
-                currentCalendarMonth = 11;
-                currentCalendarYear--;
-            }
-            generateAdminMonthCalendar();
-        }
-
-        function adminNextMonth() {
-            currentCalendarMonth++;
-            if (currentCalendarMonth > 11) {
-                currentCalendarMonth = 0;
-                currentCalendarYear++;
-            }
-            generateAdminMonthCalendar();
-        }
-
-        // Mostrar reservaciones para una fecha específica
-        function showReservationsForDate(dateString) {
-            const dateReservations = reservations.filter(r => r.date === dateString);
-            const dateObj = new Date(dateString);
+        function sendConfirmationMessage(reservation) {
+            const dateObj = new Date(reservation.date + 'T12:00:00'); // FIX: Agregar hora para evitar problemas de zona horaria
             const formattedDate = dateObj.toLocaleDateString('es-ES', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             });
-
-            let message = `Reservaciones para ${formattedDate}:\n\n`;
             
-            if (dateReservations.length === 0) {
-                message += "No hay reservaciones para esta fecha.";
-            } else {
-                dateReservations.forEach((reservation, index) => {
-                    message += `${index + 1}. ${reservation.furnitureName} - ${reservation.price}\n`;
-                    if (reservation.clientName) {
-                        message += `   Cliente: ${reservation.clientName}\n`;
-                    }
-                    if (reservation.clientPhone) {
-                        message += `   Teléfono: ${reservation.clientPhone}\n`;
-                    }
-                    message += '\n';
-                });
-            }
+            const message = `¡Hola ${reservation.client.name}! Tu reservación en Le Mouk Club ha sido CONFIRMADA.
 
-            alert(message);
+📅 Fecha: ${formattedDate}
+🪑 Mesa: ${reservation.furnitureName}
+👥 Capacidad: ${reservation.capacity} personas
+💰 Precio: $${reservation.price}
+
+¡Estamos emocionados de recibirte! Recuerda llegar puntual para disfrutar al máximo de tu experiencia.
+
+Para cualquier consulta, contáctanos al 809-460-3090.
+
+¡Te esperamos en Le Mouk Club! 🎉`;
+
+            const whatsappUrl = `https://wa.me/${reservation.client.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
         }
 
-        // Actualizar selector de muebles en el formulario administrativo
-        function updateFurnitureSelect() {
-            const furnitureSelect = document.getElementById('furniture-select');
-            furnitureSelect.innerHTML = '<option value="">Selecciona una mesa</option>';
-            
-            furnitureData.forEach(furniture => {
-                const option = document.createElement('option');
-                option.value = furniture.id;
-                option.textContent = `${furniture.name} - ${furniture.capacity} - ${furniture.price}`;
-                furnitureSelect.appendChild(option);
-            });
-        }
-
-        // Agregar reservación manual desde el panel administrativo
-        function addManualReservation() {
-            const clientName = document.getElementById('client-name').value;
-            const clientPhone = document.getElementById('client-phone').value;
-            const reservationDate = document.getElementById('reservation-date').value;
-            const furnitureId = parseInt(document.getElementById('furniture-select').value);
-
-            if (!clientName || !clientPhone || !reservationDate || !furnitureId) {
-                alert('Por favor, complete todos los campos.');
-                return;
-            }
-
-            const furniture = furnitureData.find(f => f.id === furnitureId);
-            
-            // Verificar disponibilidad
-            const existingReservation = reservations.find(r => 
-                r.date === reservationDate && r.furnitureId === furnitureId
-            );
-
-            if (existingReservation) {
-                alert('Esta mesa ya está reservada para la fecha seleccionada.');
-                return;
-            }
-
-            // Crear reservación
-            const newReservation = {
-                id: Date.now(),
-                date: reservationDate,
-                furnitureId: furnitureId,
-                furnitureName: furniture.name,
-                price: furniture.price,
-                clientName: clientName,
-                clientPhone: clientPhone,
-                timestamp: new Date().toISOString(),
-                source: 'admin'
-            };
-
-            reservations.push(newReservation);
-            localStorage.setItem('mouk_reservations', JSON.stringify(reservations));
-
-            // Actualizar interfaz
-            updateReservationsList();
-            generateAdminMonthCalendar();
-            generateMonthCalendar();
-
-            // Limpiar formulario
-            document.getElementById('add-reservation-form').reset();
-
-            alert(`Reservación agregada exitosamente para ${clientName}`);
-        }
-
-        // Abrir modal de WhatsApp
-        function openWhatsAppModal(reservationId) {
+        function sendPaymentReminder(reservationId) {
             const reservation = reservations.find(r => r.id === reservationId);
             if (!reservation) return;
-
-            currentReservationForWhatsApp = reservation;
-
-            const dateObj = new Date(reservation.date);
+            
+            const dateObj = new Date(reservation.date + 'T12:00:00'); // FIX: Agregar hora para evitar problemas de zona horaria
             const formattedDate = dateObj.toLocaleDateString('es-ES', {
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
             });
-
-            let message = `Hola ${reservation.clientName || 'cliente'},\n\n`;
-            message += `Confirmamos tu reservación en Le Mouk Club:\n\n`;
-            message += `📅 Fecha: ${formattedDate}\n`;
-            message += `🪑 Mesa: ${reservation.furnitureName}\n`;
-            message += `💰 Precio: ${reservation.price}\n`;
-            message += `📞 Teléfono de contacto: ${reservation.clientPhone || 'No proporcionado'}\n\n`;
-            message += `¡Esperamos verte pronto!\n\n`;
-            message += `Saludos,\nEl equipo de Le Mouk Club`;
-
-            document.getElementById('whatsapp-message').textContent = message;
-            document.getElementById('whatsapp-modal').style.display = 'flex';
-        }
-
-        // Enviar mensaje por WhatsApp
-        function sendWhatsAppMessage() {
-            if (!currentReservationForWhatsApp) return;
-
-            const phoneNumber = currentReservationForWhatsApp.clientPhone || '1234567890';
-            const message = document.getElementById('whatsapp-message').textContent;
-            const encodedMessage = encodeURIComponent(message);
             
-            window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
-            document.getElementById('whatsapp-modal').style.display = 'none';
+            const message = `¡Hola ${reservation.client.name}! Recordatorio de tu reservación pendiente en Le Mouk Club.
+
+📅 Fecha: ${formattedDate}
+🪑 Mesa: ${reservation.furnitureName}
+👥 Capacidad: ${reservation.capacity} personas
+💰 Precio: $${reservation.price}
+
+Para confirmar tu reserva, realiza el pago a:
+🏦 Banco: ${WHATSAPP_CONFIG.bankInfo.name}
+📝 Cuenta: ${WHATSAPP_CONFIG.bankInfo.account}
+👤 Titular: ${WHATSAPP_CONFIG.bankInfo.holder}
+
+Una vez realizado el pago, envíanos el comprobante por este mismo medio.
+
+¡Esperamos verte pronto! 🎉`;
+
+            const whatsappUrl = `https://wa.me/${reservation.client.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
         }
 
-        // Eliminar reservación
-        function deleteReservation(reservationId) {
-            if (confirm('¿Está seguro de que desea eliminar esta reservación?')) {
-                reservations = reservations.filter(r => r.id !== reservationId);
-                localStorage.setItem('mouk_reservations', JSON.stringify(reservations));
-                
-                updateReservationsList();
-                generateAdminMonthCalendar();
-                generateMonthCalendar();
-                alert('Reservación eliminada exitosamente.');
+        async function cancelReservation(reservationId) {
+            if (!confirm('¿Estás seguro de que quieres cancelar esta reservación?')) return;
+
+            showSyncStatus('Cancelando reservación...', 'loading');
+            const success = await updateReservationStatus(reservationId, 'cancelled');
+            
+            if (success) {
+                showSyncStatus('✅ Reservación cancelada', 'success');
+            } else {
+                showSyncStatus('❌ Error al cancelar', 'error');
             }
         }
+
+        function clearReservations() {
+            if (!confirm('¿ESTÁS SEGURO? Esto eliminará TODAS las reservaciones permanentemente.')) return;
+
+            if (db) {
+                db.ref('reservations').remove()
+                    .then(() => {
+                        showSyncStatus('✅ Todas las reservaciones eliminadas', 'success');
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                        showSyncStatus('❌ Error al eliminar', 'error');
+                    });
+            }
+        }
+
+        function printReservations() {
+            // Filtrar solo las reservaciones confirmadas
+            const confirmedReservations = reservations.filter(r => r.status === 'confirmed');
+            
+            if (confirmedReservations.length === 0) {
+                alert('No hay reservaciones confirmadas para imprimir');
+                return;
+            }
+            
+            const printContent = document.getElementById('print-content');
+            let html = `
+                <h3>Reservaciones Confirmadas - Total: ${confirmedReservations.length}</h3>
+                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                    <thead>
+                        <tr style="background-color: #f5f5f5;">
+                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Fecha</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Mesa</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Cliente</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">WhatsApp</th>
+                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            const sortedReservations = [...confirmedReservations].sort((a, b) => 
+                new Date(a.date) - new Date(b.date)
+            );
+            
+            sortedReservations.forEach(reservation => {
+                const dateObj = new Date(reservation.date + 'T12:00:00'); // FIX: Agregar hora para evitar problemas de zona horaria
+                
+                html += `
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${dateObj.toLocaleDateString('es-ES')}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${reservation.furnitureName}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${reservation.client.name} ${reservation.client.lastname}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${reservation.client.whatsapp}</td>
+                        <td style="border: 1px solid #ddd; padding: 8px;">${reservation.client.notes || '-'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                    </tbody>
+                </table>
+                <p style="margin-top: 20px; font-size: 12px;">Impreso el ${new Date().toLocaleDateString('es-ES')} a las ${new Date().toLocaleTimeString('es-ES')}</p>
+            `;
+            
+            printContent.innerHTML = html;
+            
+            // Mostrar la sección de impresión y luego imprimir
+            document.getElementById('printable-reservations').style.display = 'block';
+            window.print();
+            document.getElementById('printable-reservations').style.display = 'none';
+        }
+
+        function scrollToReservations() {
+            document.getElementById('reservations').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('nav-links').classList.toggle('active');
+        }
+
+        function showSyncStatus(message, type) {
+            const statusElement = document.getElementById('sync-status');
+            const messageElement = document.getElementById('sync-message');
+            
+            messageElement.textContent = message;
+            statusElement.style.display = 'flex';
+            
+            if (type === 'success') statusElement.style.backgroundColor = 'rgba(76, 175, 80, 0.2)';
+            else if (type === 'error') statusElement.style.backgroundColor = 'rgba(244, 67, 54, 0.2)';
+            else if (type === 'loading') statusElement.style.backgroundColor = 'rgba(33, 150, 243, 0.2)';
+            
+            if (type !== 'loading') {
+                setTimeout(() => statusElement.style.display = 'none', 3000);
+            }
+        }
+
+        function renderAdminCalendar() {
+            const container = document.getElementById('admin-calendar-container');
+            const today = new Date();
+            const currentMonth = today.getMonth();
+            const currentYear = today.getFullYear();
+            
+            let html = '<div class="calendar"><div class="calendar-header">';
+            ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].forEach(day => {
+                html += `<div>${day}</div>`;
+            });
+            html += '</div>';
+            
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const lastDate = new Date(currentYear, currentMonth + 1, 0).getDate();
+            
+            for (let i = 0; i < firstDay; i++) {
+                html += '<div class="calendar-day disabled"></div>';
+            }
+            
+            for (let day = 1; day <= lastDate; day++) {
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dateObj = new Date(currentYear, currentMonth, day);
+                const isPast = dateObj < new Date(new Date().setHours(0,0,0,0));
+                const dayReservations = reservations.filter(r => r.date === dateStr);
+                const confirmedReservations = dayReservations.filter(r => r.status === 'confirmed');
+                const pendingReservations = dayReservations.filter(r => r.status === 'pending');
+                
+                let dayClass = 'calendar-day';
+                if (isPast) dayClass += ' disabled';
+                if (confirmedReservations.length > 0) dayClass += ' has-reservations';
+                if (pendingReservations.length > 0) dayClass += ' has-pending';
+                
+                html += `<div class="${dayClass}" data-date="${dateStr}">${day}`;
+                if (confirmedReservations.length > 0) {
+                    html += `<div class="reservation-count">${confirmedReservations.length}</div>`;
+                }
+                if (pendingReservations.length > 0 && confirmedReservations.length === 0) {
+                    html += `<div class="reservation-count pending-count">${pendingReservations.length}</div>`;
+                }
+                html += '</div>';
+            }
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        console.log('🎉 Le Mouk Club App cargada correctamente');
     </script>
 </body>
 </html>
